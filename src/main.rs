@@ -1,5 +1,4 @@
 use async_trait::async_trait;
-use http::header;
 
 use pingora_core::server::configuration::Opt;
 use pingora_core::server::Server;
@@ -23,7 +22,7 @@ impl ProxyHttp for LB {
     fn new_ctx(&self) -> Self::CTX {}
 
     async fn upstream_peer(&self, session: &mut Session, _ctx: &mut ()) -> Result<Box<HttpPeer>> {
-        let host_header = session.get_header(header::HOST).unwrap().to_str().unwrap();
+        let host_header = session.req_header().uri.host().unwrap();
         println!("{host_header}");
 
         let host_config = self
@@ -58,7 +57,14 @@ fn main() {
             }
         ]
     });
-    lb.add_tcp("0.0.0.0:443");
+    lb.add_tcp("0.0.0.0:8080");
+
+    let cert_path = "/etc/letsencrypt/live/kargate.site/fullchain.pem";
+    let key_path = "/etc/letsencrypt/live/kargate.site/privkey.pem";
+
+    let mut tls_settings = pingora_core::listeners::tls::TlsSettings::intermediate(cert_path, key_path).unwrap();
+    tls_settings.enable_h2();
+    lb.add_tls_with_settings("0.0.0.0:443", None, tls_settings);
 
     my_server.add_service(lb);
     my_server.run_forever();
