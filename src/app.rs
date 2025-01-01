@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use async_trait::async_trait;
 use hashbrown::HashMap;
 use http::header::HOST;
@@ -7,7 +9,7 @@ use pingora_proxy::{ProxyHttp, Session};
 use crate::service::HostConfig;
 
 pub struct AppProxy {
-    pub host_configs: HashMap<String, HostConfig>,
+    pub host_configs: Arc<HashMap<String, HostConfig>>,
 }
 
 #[async_trait]
@@ -16,25 +18,25 @@ impl ProxyHttp for AppProxy {
     fn new_ctx(&self) -> Self::CTX {}
 
     async fn upstream_peer(&self, session: &mut Session, _ctx: &mut ()) -> Result<Box<HttpPeer>> {
-        let host_header = if let Some(host_header) = session.get_header(HOST) {
-            host_header.to_str().unwrap()
+        let host_header = session
+            .get_header(HOST)
+            .and_then(|h| h.to_str().ok())
+            .or_else(|| session.req_header().uri.host())
+            .expect("Host header is missing");
+
+        if let Some(host_config) = self.host_configs.get(host_header) {
+            let proxy_to = HttpPeer::new(
+                &host_config.proxy_addr,
+                host_config.proxy_tls,
+                host_config.proxy_hostname.clone(),
+            );
+            Ok(Box::new(proxy_to))
         } else {
-            session.req_header().uri.host().unwrap()
-        };
-
-        let host_config = self.host_configs.get(host_header).unwrap();
-
-        let proxy_to = HttpPeer::new(
-            host_config.proxy_addr.as_str(),
-            host_config.proxy_tls,
-            host_config.proxy_hostname.clone(),
-        );
-
-        let peer = Box::new(proxy_to);
-        Ok(peer)
+            Err(pingora::Error::new(pingora_core::Custom("Host not found")))
+        }
     }
 
-    async fn upstream_request_filter(
+    /*async fn upstream_request_filter(
         &self,
         session: &mut Session,
         upstream_request: &mut pingora_http::RequestHeader,
@@ -64,5 +66,5 @@ impl ProxyHttp for AppProxy {
         }
 
         Ok(())
-    }
+    }*/
 }

@@ -18,12 +18,13 @@ pub fn proxy_service(
     listen_addr: &str,
     host_configs: HashMap<String, HostConfig>,
 ) -> Service<HttpProxy<AppProxy>> {
+    let host_configs = Arc::new(host_configs);
     let mut proxy = pingora_proxy::http_proxy_service(server_conf, AppProxy { host_configs });
     let cert_path = "/etc/letsencrypt/live/kargate.site/fullchain.pem";
     let key_path = "/etc/letsencrypt/live/kargate.site/privkey.pem";
 
     let mut tls_settings =
-        pingora_core::listeners::tls::TlsSettings::intermediate(cert_path, key_path).unwrap();
+        pingora_core::listeners::tls::TlsSettings::intermediate(cert_path, key_path).expect("TLS error");
     tls_settings.enable_h2();
     proxy.add_tls_with_settings(listen_addr, None, tls_settings);
 
