@@ -20,6 +20,8 @@ struct Args {
 #[derive(Serialize, Deserialize)]
 struct Proxy {
     listener: String,
+    tls_certificate: Option<String>,
+    tls_certificate_key: Option<String>,
     servers: BTreeMap<String, HostConfig>,
 }
 
@@ -30,17 +32,19 @@ struct Config {
 
 // RUST_LOG=INFO cargo run --example load_balancer
 fn main() {
+    let opt = Opt::default();
+    let mut my_server = Server::new(Some(opt)).unwrap();
+    my_server.bootstrap();
+
     let arg = Args::parse();
 
     let config_file = fs::read_to_string(arg.config).expect("Failed to open file");
     let config: Config = toml::from_str(&config_file).expect("Failed to deserialize Cargo.toml");
 
-    let opt = Opt::parse_args();
-    let mut my_server = Server::new(Some(opt)).unwrap();
-    my_server.bootstrap();
+
 
     for i in config.proxy {
-        let proxy = proxy_service(&my_server.configuration, &i.listener, i.servers);
+        let proxy = proxy_service(&my_server.configuration, &i.listener, i.tls_certificate, i.tls_certificate_key, i.servers);
         my_server.add_service(proxy);
     }
 
