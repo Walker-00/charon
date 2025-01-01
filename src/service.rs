@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use hashbrown::HashMap;
 use pingora::{server::configuration::ServerConf, services::listening::Service};
 use pingora_proxy::HttpProxy;
 
@@ -15,7 +16,7 @@ pub struct HostConfig {
 pub fn proxy_service(
     server_conf: &Arc<ServerConf>,
     listen_addr: &str,
-    host_configs: Vec<HostConfig>,
+    host_configs: HashMap<String, HostConfig>,
 ) -> Service<HttpProxy<AppProxy>> {
     let mut proxy = pingora_proxy::http_proxy_service(server_conf, AppProxy { host_configs });
     let cert_path = "/etc/letsencrypt/live/kargate.site/fullchain.pem";

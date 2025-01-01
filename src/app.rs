@@ -1,4 +1,5 @@
 use async_trait::async_trait;
+use hashbrown::HashMap;
 use http::header::HOST;
 use pingora::{Result, prelude::HttpPeer};
 use pingora_proxy::{ProxyHttp, Session};
@@ -6,7 +7,7 @@ use pingora_proxy::{ProxyHttp, Session};
 use crate::service::HostConfig;
 
 pub struct AppProxy {
-    pub host_configs: Vec<HostConfig>,
+    pub host_configs: HashMap<String, HostConfig>,
 }
 
 #[async_trait]
@@ -21,11 +22,7 @@ impl ProxyHttp for AppProxy {
             session.req_header().uri.host().unwrap()
         };
 
-        let host_config = self
-            .host_configs
-            .iter()
-            .find(|x| x.proxy_hostname == host_header)
-            .unwrap();
+        let host_config = self.host_configs.get(host_header).unwrap();
 
         let proxy_to = HttpPeer::new(
             host_config.proxy_addr.as_str(),
@@ -49,11 +46,13 @@ impl ProxyHttp for AppProxy {
             session.req_header().uri.host().unwrap()
         };
 
-        let host_config = self
+        let host_config = self.host_configs.get(host_header).unwrap();
+
+        /*let host_config = self
             .host_configs
             .iter()
             .find(|x| x.proxy_hostname == host_header)
-            .unwrap();
+            .unwrap();*/
 
         if host_config.is_websocket {
             upstream_request.insert_header("Upgrade", "websocket").unwrap();

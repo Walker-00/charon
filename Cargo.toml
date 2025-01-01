@@ -11,6 +11,7 @@ codegen-units = 1
 
 [dependencies]
 async-trait = "0.1.83"
+hashbrown = "0.15.2"
 http = "1.2.0"
 pingora = { version = "0.4.0", features = ["proxy"] }
 pingora-core = { version = "0.4.0", features = ["rustls"] }
