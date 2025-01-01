@@ -9,8 +9,8 @@ is_websocket = false
 
 [[proxy]]
 listener = "0.0.0.0:443"
-tls_certificate = "/etc/letsencrypt/live/kargate.site/fullchain.pem";
-tls_certificate_key = "/etc/letsencrypt/live/kargate.site/privkey.pem";
+tls_certificate = "/etc/letsencrypt/live/kargate.site/fullchain.pem"
+tls_certificate_key = "/etc/letsencrypt/live/kargate.site/privkey.pem"
 
 [proxy.servers."backend.kargate.site"]
 proxy_addr = "127.0.0.1:9691"
