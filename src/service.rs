@@ -3,9 +3,11 @@ use std::sync::Arc;
 use hashbrown::HashMap;
 use pingora::{server::configuration::ServerConf, services::listening::Service};
 use pingora_proxy::HttpProxy;
+use serde::Serialize;
 
 use crate::app::AppProxy;
 
+#[derive(Serialize)]
 pub struct HostConfig {
     pub proxy_addr: String,
     pub proxy_tls: bool,

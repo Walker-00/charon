@@ -1,13 +1,40 @@
+use std::{collections::BTreeMap, fs};
+
+use clap::Parser;
 use hashbrown::HashMap;
 use pingora_core::server::Server;
 use pingora_core::server::configuration::Opt;
+use serde::Serialize;
 use service::{HostConfig, proxy_service};
 
 mod app;
 mod service;
 
+#[derive(clap::Parser, Debug)]
+#[command(version, about, long_about = None)]
+struct Args {
+    /// Configuration file path
+    #[arg(short, long)]
+    config: String,
+}
+
+#[derive(Serialize)]
+struct Proxy {
+    listener: String,
+    servers: BTreeMap<String, HostConfig>,
+}
+
+#[derive(Serialize)]
+struct Config {
+    proxy: Vec<Proxy>,
+}
+
 // RUST_LOG=INFO cargo run --example load_balancer
 fn main() {
+    let arg = Args::parse();
+
+    let mut file = fs::read_to_string(arg.config).expect("Failed to open file");
+
     let opt = Opt::parse_args();
     let mut my_server = Server::new(Some(opt)).unwrap();
     my_server.bootstrap();
