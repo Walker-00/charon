@@ -49,14 +49,18 @@ impl ProxyHttp for AppProxy {
         let host_config = self.host_configs.get(host_header).unwrap();
 
         /*let host_config = self
-            .host_configs
-            .iter()
-            .find(|x| x.proxy_hostname == host_header)
-            .unwrap();*/
+        .host_configs
+        .iter()
+        .find(|x| x.proxy_hostname == host_header)
+        .unwrap();*/
 
         if host_config.is_websocket {
-            upstream_request.insert_header("Upgrade", "websocket").unwrap();
-            upstream_request.insert_header("Connection", "Upgrade").unwrap();
+            upstream_request
+                .insert_header("Upgrade", "websocket")
+                .unwrap();
+            upstream_request
+                .insert_header("Connection", "Upgrade")
+                .unwrap();
         }
 
         Ok(())
