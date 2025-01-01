@@ -1,13 +1,12 @@
-use std::sync::Arc;
+use std::{collections::BTreeMap, sync::Arc};
 
-use hashbrown::HashMap;
 use pingora::{server::configuration::ServerConf, services::listening::Service};
 use pingora_proxy::HttpProxy;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::app::AppProxy;
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 pub struct HostConfig {
     pub proxy_addr: String,
     pub proxy_tls: bool,
@@ -18,7 +17,7 @@ pub struct HostConfig {
 pub fn proxy_service(
     server_conf: &Arc<ServerConf>,
     listen_addr: &str,
-    host_configs: HashMap<String, HostConfig>,
+    host_configs: BTreeMap<String, HostConfig>,
 ) -> Service<HttpProxy<AppProxy>> {
     let host_configs = Arc::new(host_configs);
     let mut proxy = pingora_proxy::http_proxy_service(server_conf, AppProxy { host_configs });

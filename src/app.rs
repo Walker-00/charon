@@ -1,7 +1,6 @@
-use std::sync::Arc;
+use std::{collections::BTreeMap, sync::Arc};
 
 use async_trait::async_trait;
-use hashbrown::HashMap;
 use http::header::HOST;
 use pingora::{Result, prelude::HttpPeer};
 use pingora_proxy::{ProxyHttp, Session};
@@ -9,7 +8,7 @@ use pingora_proxy::{ProxyHttp, Session};
 use crate::service::HostConfig;
 
 pub struct AppProxy {
-    pub host_configs: Arc<HashMap<String, HostConfig>>,
+    pub host_configs: Arc<BTreeMap<String, HostConfig>>,
 }
 
 #[async_trait]

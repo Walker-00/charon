@@ -1,10 +1,9 @@
 use std::{collections::BTreeMap, fs};
 
 use clap::Parser;
-use hashbrown::HashMap;
 use pingora_core::server::Server;
 use pingora_core::server::configuration::Opt;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use service::{HostConfig, proxy_service};
 
 mod app;
@@ -18,13 +17,13 @@ struct Args {
     config: String,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 struct Proxy {
     listener: String,
     servers: BTreeMap<String, HostConfig>,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 struct Config {
     proxy: Vec<Proxy>,
 }
@@ -33,16 +32,22 @@ struct Config {
 fn main() {
     let arg = Args::parse();
 
-    let mut file = fs::read_to_string(arg.config).expect("Failed to open file");
+    let config_file = fs::read_to_string(arg.config).expect("Failed to open file");
+    let config: Config = toml::from_str(&config_file).expect("Failed to deserialize Cargo.toml");
 
     let opt = Opt::parse_args();
     let mut my_server = Server::new(Some(opt)).unwrap();
     my_server.bootstrap();
 
-    let proxy = proxy_service(
+    for i in config.proxy {
+        let proxy = proxy_service(&my_server.configuration, &i.listener, i.servers);
+        my_server.add_service(proxy);
+    }
+
+    /*let proxy = proxy_service(
         &my_server.configuration,
         "0.0.0.0:443",
-        HashMap::from([
+        BTreeMap::from([
             ("admin.kargate.site".to_owned(), HostConfig {
                 proxy_addr: "127.0.0.1:9693".to_owned(),
                 proxy_tls: false,
@@ -98,8 +103,8 @@ fn main() {
                 is_websocket: true,
             }),
         ]),
-    );
+    );*/
 
-    my_server.add_service(proxy);
+    //my_server.add_service(proxy);
     my_server.run_forever();
 }
