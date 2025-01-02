@@ -30,7 +30,6 @@ struct Config {
     proxy: Vec<Proxy>,
 }
 
-// RUST_LOG=INFO cargo run --example load_balancer
 fn main() {
     let opt = Opt::default();
     let mut my_server = Server::new(Some(opt)).unwrap();

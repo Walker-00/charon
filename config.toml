@@ -5,7 +5,6 @@ listener = "0.0.0.0:80"
 proxy_addr = "127.0.0.1:9690"
 proxy_tls = false
 proxy_hostname = "notls.domain.com"
-is_websocket = false
 
 [[proxy]]
 listener = "0.0.0.0:443"
@@ -16,46 +15,38 @@ tls_certificate_key = "/etc/letsencrypt/live/kargate.site/privkey.pem"
 proxy_addr = "127.0.0.1:9691"
 proxy_tls = false
 proxy_hostname = "backend.kargate.site"
-is_websocket = false
 
 [proxy.servers."kargate.site"]
 proxy_addr = "127.0.0.1:9696"
 proxy_tls = false
 proxy_hostname = "kargate.site"
-is_websocket = false
 
 [proxy.servers."landing.kargate.site"]
 proxy_addr = "127.0.0.1:9696"
 proxy_tls = false
 proxy_hostname = "landing.kargate.site"
-is_websocket = false
 
 [proxy.servers."ssp.kargate.site"]
 proxy_addr = "127.0.0.1:9699"
 proxy_tls = false
 proxy_hostname = "ssp.kargate.site"
-is_websocket = false
 
 [proxy.servers."wsa.kargate.site"]
 proxy_addr = "127.0.0.1:9694"
 proxy_tls = false
 proxy_hostname = "wsa.kargate.site"
-is_websocket = true
 
 [proxy.servers."wsb.kargate.site"]
 proxy_addr = "127.0.0.1:9692"
 proxy_tls = false
 proxy_hostname = "wsb.kargate.site"
-is_websocket = true
 
 [proxy.servers."wsio.kargate.site"]
 proxy_addr = "127.0.0.1:9697"
 proxy_tls = false
 proxy_hostname = "wsio.kargate.site"
-is_websocket = true
 
 [proxy.servers."www.kargate.site"]
 proxy_addr = "127.0.0.1:9696"
 proxy_tls = false
 proxy_hostname = "www.kargate.site"
-is_websocket = false

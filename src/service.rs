@@ -11,7 +11,6 @@ pub struct HostConfig {
     pub proxy_addr: String,
     pub proxy_tls: bool,
     pub proxy_hostname: String,
-    pub is_websocket: bool,
 }
 
 pub fn proxy_service(
