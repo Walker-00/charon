@@ -1,13 +1,17 @@
 use std::{collections::HashMap, fs, time::Duration};
 use clap::Parser;
 use load_balancer::service::{load_balancer_service, LBHostConfig};
-use log::{error, info};
 use pingora::prelude::background_service;
 use pingora_core::server::Server;
 use pingora_core::server::configuration::Opt;
 use pingora_load_balancing::{health_check, LoadBalancer};
 use proxy::service::{proxy_service, ProxyHostConfig};
 use serde::{Deserialize, Serialize};
+use syntect::easy::HighlightLines;
+use syntect::parsing::SyntaxSet;
+use syntect::highlighting::{Style, ThemeSet};
+use syntect::util::{as_24_bit_terminal_escaped, LinesWithEndings};
+use tracing::{error, info, Level};
 
 mod proxy;
 mod load_balancer;
@@ -60,24 +64,52 @@ struct Config {
 }
 
 fn main() {
+    tracing_subscriber::fmt()
+        .with_max_level(Level::ERROR)
+        .pretty()
+        .with_ansi(true)
+        .with_file(true)
+        .with_line_number(true)
+        .init();
+
     color_eyre::install().unwrap();
-    env_logger::init();
+
+    let ps = SyntaxSet::load_defaults_newlines();
+    let ts = ThemeSet::load_defaults();
+
+    let syntax = ps.find_syntax_by_extension("toml").unwrap();
+    //let theme = &ts.themes["base16"];
+    let mut h = HighlightLines::new(syntax, &ts.themes["base16-ocean.dark"]);
 
     let arg = Args::parse();
 
     // Handle example configurations
     if arg.example {
-        println!("{}", toml::to_string_pretty(&Config::new()).unwrap());
+        let example = toml::to_string_pretty(&Config::new()).unwrap();
+        for line in LinesWithEndings::from(&example) {
+            let ranges: Vec<(Style, &str)> = h.highlight_line(line, &ps).unwrap();
+            let escaped = as_24_bit_terminal_escaped(&ranges[..], true);
+            print!("{}", escaped);
+        }
         std::process::exit(0);
     } else if arg.example_proxy {
-        println!("{}", toml::to_string_pretty(&Config::new_proxy_example()).unwrap());
+        let example = toml::to_string_pretty(&Config::new_proxy_example()).unwrap();
+        for line in LinesWithEndings::from(&example) {
+            let ranges: Vec<(Style, &str)> = h.highlight_line(line, &ps).unwrap();
+            let escaped = as_24_bit_terminal_escaped(&ranges[..], true);
+            print!("{}", escaped);
+        }
         std::process::exit(0);
     } else if arg.example_load_balancer {
-        println!("{}", toml::to_string_pretty(&Config::new_load_balancer_example()).unwrap());
+        let example = toml::to_string_pretty(&Config::new_load_balancer_example()).unwrap();
+        for line in LinesWithEndings::from(&example) {
+            let ranges: Vec<(Style, &str)> = h.highlight_line(line, &ps).unwrap();
+            let escaped = as_24_bit_terminal_escaped(&ranges[..], true);
+            print!("{}", escaped);
+        }
         std::process::exit(0);
     }
 
-    // Ensure config file is provided unless one of the example flags is used
     if arg.config.is_none() {
         error!("Configuration file is required unless one of the example flags is provided.");
         info!("Use '--example' for a sample config.");
