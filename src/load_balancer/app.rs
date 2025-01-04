@@ -19,6 +19,8 @@ impl ProxyHttp for AppLB {
     fn new_ctx(&self) -> Self::CTX {}
 
     async fn upstream_peer(&self, session: &mut Session, _ctx: &mut ()) -> Result<Box<HttpPeer>> {
+        let upstream = self.lb_upstreams.select(b"", 256).unwrap();
+
         let host_header = session
             .get_header(HOST)
             .and_then(|h| h.to_str().ok())
@@ -27,9 +29,9 @@ impl ProxyHttp for AppLB {
 
         if let Some(host_config) = self.host_configs.get(host_header) {
             let proxy_to = HttpPeer::new(
-                &host_config.proxy_addr,
-                host_config.proxy_tls,
-                host_config.proxy_hostname.clone(),
+                upstream,
+                host_config.load_balancer_tls,
+                host_config.load_balancer_hostname.clone(),
             );
             Ok(Box::new(proxy_to))
         } else {
@@ -55,7 +57,7 @@ impl ProxyHttp for AppLB {
                 host_config.proxy_hostname.clone(),
             );
             Ok(Box::new(proxy_to))*/
-            if let Some(headers) = &host_config.proxy_headers {
+            if let Some(headers) = &host_config.load_balancer_headers {
                 for (header, value) in headers {
                     upstream_request
                         .insert_header(header.to_owned(), value)

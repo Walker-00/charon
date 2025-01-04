@@ -2,7 +2,7 @@ use std::{collections::BTreeMap, fs, time::Duration};
 
 use clap::Parser;
 use load_balancer::service::{load_balancer_service, LBHostConfig};
-use pingora::{prelude::background_service, services::background};
+use pingora::prelude::background_service;
 use pingora_core::server::Server;
 use pingora_core::server::configuration::Opt;
 use pingora_load_balancing::{health_check, LoadBalancer};
