@@ -1,8 +1,11 @@
-use std::{collections::BTreeMap, fs};
+use std::{collections::BTreeMap, fs, time::Duration};
 
 use clap::Parser;
+use load_balancer::service::{load_balancer_service, LBHostConfig};
+use pingora::{prelude::background_service, services::background};
 use pingora_core::server::Server;
 use pingora_core::server::configuration::Opt;
+use pingora_load_balancing::{health_check, LoadBalancer};
 use proxy::service::{proxy_service, ProxyHostConfig};
 use serde::{Deserialize, Serialize};
 
@@ -18,7 +21,7 @@ struct Args {
 }
 
 #[derive(Serialize, Deserialize)]
-struct Proxy {
+struct ProxyConfig {
     listener: String,
     tls_certificate: Option<String>,
     tls_certificate_key: Option<String>,
@@ -26,19 +29,21 @@ struct Proxy {
 }
 
 #[derive(Serialize, Deserialize)]
-struct LoadBalancer {
+struct LoadBalancerConfig {
     listener: String,
+    upstreams: Vec<String>,
     health_check: Option<bool>,
-    health_check_frequency: Option<u32>,
+    health_check_frequency: Option<u64>,
+    parallel_health_check: Option<bool>,
     tls_certificate: Option<String>,
     tls_certificate_key: Option<String>,
-    servers: BTreeMap<String, ProxyHostConfig>,
+    servers: BTreeMap<String, LBHostConfig>,
 }
 
 #[derive(Serialize, Deserialize)]
 struct Config {
-    proxy: Vec<Proxy>,
-    load_balancer: Option<Vec<LoadBalancer>>
+    proxy: Vec<ProxyConfig>,
+    load_balancer: Option<Vec<LoadBalancerConfig>>
 }
 
 fn main() {
@@ -53,7 +58,24 @@ fn main() {
 
     if let Some(load_balancers) = config.load_balancer {
         for i in load_balancers {
-            let load_balancer = proxy_service(&my_server.configuration, &i.listener, i.tls_certificate, i.tls_certificate_key, i.servers);
+            let mut upstreams = LoadBalancer::try_from_iter(i.upstreams).unwrap();
+
+            if i.health_check.unwrap_or(false) {
+                let hc = health_check::TcpHealthCheck::new();
+
+                upstreams.set_health_check(hc);
+                upstreams.parallel_health_check = i.parallel_health_check.unwrap_or(false);
+
+                if let Some(frequency) = i.health_check_frequency {
+                    upstreams.health_check_frequency = Some(Duration::from_secs(frequency));
+                }
+
+            }
+
+            let background = background_service(&format!("healt check for {}", &i.listener), upstreams);
+            let upstreams = background.task();
+
+            let load_balancer = load_balancer_service(&my_server.configuration, &i.listener, i.tls_certificate, i.tls_certificate_key, i.servers, upstreams);
             my_server.add_service(load_balancer);
         }
     }

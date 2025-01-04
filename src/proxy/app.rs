@@ -47,12 +47,6 @@ impl ProxyHttp for AppProxy {
             .or_else(|| session.req_header().uri.host())
             .expect("Host header is missing");
         if let Some(host_config) = self.host_configs.get(host_header) {
-            /*let proxy_to = HttpPeer::new(
-                &host_config.proxy_addr,
-                host_config.proxy_tls,
-                host_config.proxy_hostname.clone(),
-            );
-            Ok(Box::new(proxy_to))*/
             if let Some(headers) = &host_config.proxy_headers {
                 for (header, value) in headers {
                     upstream_request
@@ -64,16 +58,5 @@ impl ProxyHttp for AppProxy {
         } else {
             Err(pingora::Error::new(pingora_core::Custom("Host not found")))
         }
-
-        /*if host_config.is_websocket {
-            upstream_request
-                .insert_header("Upgrade", "websocket")
-                .unwrap();
-            upstream_request
-                .insert_header("Connection", "Upgrade")
-                .unwrap();
-        }
-
-        Ok(())*/
     }
 }
