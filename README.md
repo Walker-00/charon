@@ -1,3 +1,9 @@
+<div align="center">
+
+<img src="https://github.com/user-attachments/assets/c4459ede-4b98-4605-830f-3c00704f907f" width="350" height="350" alt="Charon" />
+
+</div>
+
 # Charon: The Proxy Server
 
 Charon is a proxy server, built on Pingora, designed to transfer data from the chaotic internet to servers, similar to how the mythical Charon ferried souls across the river Styx. It includes support for proxy and load balancing services with configurable TLS support, routing, and health checks.
