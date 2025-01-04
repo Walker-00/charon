@@ -28,6 +28,8 @@ The configuration file uses TOML format and supports specifying proxy and load b
 
 ### Example Configuration
 
+check [example](https://github.com/Walker-00/charon/tree/rust/example) folder for more config.
+
 ```toml
 [[proxy]]
 listener = "0.0.0.0:8080"
