@@ -4,13 +4,14 @@ use pingora::{server::configuration::ServerConf, services::listening::Service};
 use pingora_proxy::HttpProxy;
 use serde::{Deserialize, Serialize};
 
-use crate::app::AppProxy;
+use super::app::AppProxy;
 
 #[derive(Serialize, Deserialize)]
-pub struct HostConfig {
+pub struct ProxyHostConfig {
     pub proxy_addr: String,
     pub proxy_tls: bool,
     pub proxy_hostname: String,
+    pub proxy_headers: Option<Vec<(String, String)>>,
 }
 
 pub fn proxy_service(
@@ -18,7 +19,7 @@ pub fn proxy_service(
     listen_addr: &str,
     tls_certificate: Option<String>,
     tls_certificate_key: Option<String>,
-    host_configs: BTreeMap<String, HostConfig>,
+    host_configs: BTreeMap<String, ProxyHostConfig>,
 ) -> Service<HttpProxy<AppProxy>> {
     let host_configs = Arc::new(host_configs);
     let mut proxy = pingora_proxy::http_proxy_service(server_conf, AppProxy { host_configs });

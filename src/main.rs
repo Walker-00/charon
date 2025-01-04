@@ -3,11 +3,10 @@ use std::{collections::BTreeMap, fs};
 use clap::Parser;
 use pingora_core::server::Server;
 use pingora_core::server::configuration::Opt;
+use proxy::service::{proxy_service, ProxyHostConfig};
 use serde::{Deserialize, Serialize};
-use service::{HostConfig, proxy_service};
 
-mod app;
-mod service;
+mod proxy;
 
 #[derive(clap::Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -22,12 +21,23 @@ struct Proxy {
     listener: String,
     tls_certificate: Option<String>,
     tls_certificate_key: Option<String>,
-    servers: BTreeMap<String, HostConfig>,
+    servers: BTreeMap<String, ProxyHostConfig>,
+}
+
+#[derive(Serialize, Deserialize)]
+struct LoadBalancer {
+    listener: String,
+    health_check: Option<bool>,
+    health_check_frequency: Option<u32>,
+    tls_certificate: Option<String>,
+    tls_certificate_key: Option<String>,
+    servers: BTreeMap<String, ProxyHostConfig>,
 }
 
 #[derive(Serialize, Deserialize)]
 struct Config {
     proxy: Vec<Proxy>,
+    load_balancer: Option<Vec<LoadBalancer>>
 }
 
 fn main() {
@@ -40,74 +50,17 @@ fn main() {
     let config_file = fs::read_to_string(arg.config).expect("Failed to open file");
     let config: Config = toml::from_str(&config_file).expect("Failed to deserialize Cargo.toml");
 
-
+    if let Some(load_balancers) = config.load_balancer {
+        for i in load_balancers {
+            let load_balancer = proxy_service(&my_server.configuration, &i.listener, i.tls_certificate, i.tls_certificate_key, i.servers);
+            my_server.add_service(load_balancer);
+        }
+    }
 
     for i in config.proxy {
         let proxy = proxy_service(&my_server.configuration, &i.listener, i.tls_certificate, i.tls_certificate_key, i.servers);
         my_server.add_service(proxy);
     }
 
-    /*let proxy = proxy_service(
-        &my_server.configuration,
-        "0.0.0.0:443",
-        BTreeMap::from([
-            ("admin.kargate.site".to_owned(), HostConfig {
-                proxy_addr: "127.0.0.1:9693".to_owned(),
-                proxy_tls: false,
-                proxy_hostname: "admin.kargate.site".to_owned(),
-                is_websocket: false,
-            }),
-            ("ssp.kargate.site".to_owned(), HostConfig {
-                proxy_addr: "127.0.0.1:9699".to_owned(),
-                proxy_tls: false,
-                proxy_hostname: "ssp.kargate.site".to_owned(),
-                is_websocket: false,
-            }),
-            ("landing.kargate.site".to_owned(), HostConfig {
-                proxy_addr: "127.0.0.1:9696".to_owned(),
-                proxy_tls: false,
-                proxy_hostname: "landing.kargate.site".to_owned(),
-                is_websocket: false,
-            }),
-            ("www.kargate.site".to_owned(), HostConfig {
-                proxy_addr: "127.0.0.1:9696".to_owned(),
-                proxy_tls: false,
-                proxy_hostname: "www.kargate.site".to_owned(),
-                is_websocket: false,
-            }),
-            ("kargate.site".to_owned(), HostConfig {
-                proxy_addr: "127.0.0.1:9696".to_owned(),
-                proxy_tls: false,
-                proxy_hostname: "kargate.site".to_owned(),
-                is_websocket: false,
-            }),
-            ("backend.kargate.site".to_owned(), HostConfig {
-                proxy_addr: "127.0.0.1:9691".to_owned(),
-                proxy_tls: false,
-                proxy_hostname: "backend.kargate.site".to_owned(),
-                is_websocket: false,
-            }),
-            ("wsb.kargate.site".to_owned(), HostConfig {
-                proxy_addr: "127.0.0.1:9692".to_owned(),
-                proxy_tls: false,
-                proxy_hostname: "wsb.kargate.site".to_owned(),
-                is_websocket: true,
-            }),
-            ("wsa.kargate.site".to_owned(), HostConfig {
-                proxy_addr: "127.0.0.1:9694".to_owned(),
-                proxy_tls: false,
-                proxy_hostname: "wsa.kargate.site".to_owned(),
-                is_websocket: true,
-            }),
-            ("wsio.kargate.site".to_owned(), HostConfig {
-                proxy_addr: "127.0.0.1:9697".to_owned(),
-                proxy_tls: false,
-                proxy_hostname: "wsio.kargate.site".to_owned(),
-                is_websocket: true,
-            }),
-        ]),
-    );*/
-
-    //my_server.add_service(proxy);
-    my_server.run_forever();
+       my_server.run_forever();
 }
