@@ -151,8 +151,8 @@ This will start the server with the specified configuration file.
 Charon is licensed under the **WTFPL (Do What The F*ck You Want To Public License)**.
 
 <a href="http://www.wtfpl.net/"><img
-       src="http://www.wtfpl.net/wp-content/uploads/2012/12/wtfpl-badge-4.png"
-       width="80" height="15" alt="WTFPL" /></a>
+       src="http://www.wtfpl.net/wp-content/uploads/2012/12/wtfpl.svg"
+       width="220" height="160" alt="WTFPL" /></a>
 
 ## Contributing
 
