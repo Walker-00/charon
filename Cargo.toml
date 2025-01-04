@@ -6,10 +6,8 @@ edition = "2024"
 [profile.release]
 strip = true
 opt-level = 3
-lto = "fat"
+lto = true
 codegen-units = 1
-panic = "abort"
-incremental = false 
 
 [dependencies]
 async-trait = "0.1.83"
