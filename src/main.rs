@@ -74,9 +74,6 @@ fn main() {
 
     color_eyre::install().unwrap();
 
-    let mut parser = tree_sitter::Parser::new();
-    parser.set_language(&(tree_sitter_toml::LANGUAGE.into())).unwrap();
-
 
     /*let ps = SyntaxSet::load_defaults_newlines();
     let ts = ThemeSet::load_defaults();
@@ -90,15 +87,12 @@ fn main() {
     // Handle example configurations
     if arg.example {
         let example = toml::to_string_pretty(&Config::new()).unwrap();
-        println!("{:#?}", parser.parse(example, None).unwrap());
         std::process::exit(0);
     } else if arg.example_proxy {
         let example = toml::to_string_pretty(&Config::new_proxy_example()).unwrap();
-        println!("{:#?}", parser.parse(example, None).unwrap());
         std::process::exit(0);
     } else if arg.example_load_balancer {
         let example = toml::to_string_pretty(&Config::new_load_balancer_example()).unwrap();
-        println!("{:#?}", parser.parse(example, None).unwrap());
         std::process::exit(0);
     }
 
