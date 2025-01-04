@@ -26,7 +26,10 @@ in the end, you are nothing more than a passenger, crossing the river of interwe
 
 ## Performance Benchmark
 
-Charon has been benchmarked to handle up to **73,100.03** concurrent requests, outperforming other proxy servers like **Nginx**, which handles around **17,744.92** concurrent requests. This means **Charon** is approximately **312.8% faster** than **Nginx**, making it a highly efficient solution for high-performance applications.
+Charon has been benchmarked to handle up to **64,439** concurrent requests, outperforming other proxy servers like **Nginx**, which handles around **17,744** concurrent requests. This means **Charon** is approximately **263% faster** than **Nginx**, making it a highly efficient solution for high-performance applications.
+
+![image](https://github.com/user-attachments/assets/a3993c51-8e85-41d8-a600-af74da75b8cb)
+
 
 ## Installation
 
