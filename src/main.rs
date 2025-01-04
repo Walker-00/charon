@@ -7,10 +7,10 @@ use pingora_core::server::configuration::Opt;
 use pingora_load_balancing::{health_check, LoadBalancer};
 use proxy::service::{proxy_service, ProxyHostConfig};
 use serde::{Deserialize, Serialize};
-use syntect::easy::HighlightLines;
+/*use syntect::easy::HighlightLines;
 use syntect::parsing::SyntaxSet;
 use syntect::highlighting::{Style, ThemeSet};
-use syntect::util::{as_24_bit_terminal_escaped, LinesWithEndings};
+use syntect::util::{as_24_bit_terminal_escaped, LinesWithEndings};*/
 use tracing::{error, info, Level};
 
 mod proxy;
@@ -74,39 +74,31 @@ fn main() {
 
     color_eyre::install().unwrap();
 
-    let ps = SyntaxSet::load_defaults_newlines();
+    let mut parser = tree_sitter::Parser::new();
+    parser.set_language(&(tree_sitter_toml::LANGUAGE.into())).unwrap();
+
+
+    /*let ps = SyntaxSet::load_defaults_newlines();
     let ts = ThemeSet::load_defaults();
 
     let syntax = ps.find_syntax_by_extension("toml").unwrap();
     //let theme = &ts.themes["base16"];
-    let mut h = HighlightLines::new(syntax, &ts.themes["base16-ocean.dark"]);
+    let mut h = HighlightLines::new(syntax, &ts.themes["base16-ocean.dark"]);*/
 
     let arg = Args::parse();
 
     // Handle example configurations
     if arg.example {
         let example = toml::to_string_pretty(&Config::new()).unwrap();
-        for line in LinesWithEndings::from(&example) {
-            let ranges: Vec<(Style, &str)> = h.highlight_line(line, &ps).unwrap();
-            let escaped = as_24_bit_terminal_escaped(&ranges[..], true);
-            print!("{}", escaped);
-        }
+        println!("{:#?}", parser.parse(example, None).unwrap());
         std::process::exit(0);
     } else if arg.example_proxy {
         let example = toml::to_string_pretty(&Config::new_proxy_example()).unwrap();
-        for line in LinesWithEndings::from(&example) {
-            let ranges: Vec<(Style, &str)> = h.highlight_line(line, &ps).unwrap();
-            let escaped = as_24_bit_terminal_escaped(&ranges[..], true);
-            print!("{}", escaped);
-        }
+        println!("{:#?}", parser.parse(example, None).unwrap());
         std::process::exit(0);
     } else if arg.example_load_balancer {
         let example = toml::to_string_pretty(&Config::new_load_balancer_example()).unwrap();
-        for line in LinesWithEndings::from(&example) {
-            let ranges: Vec<(Style, &str)> = h.highlight_line(line, &ps).unwrap();
-            let escaped = as_24_bit_terminal_escaped(&ranges[..], true);
-            print!("{}", escaped);
-        }
+        println!("{:#?}", parser.parse(example, None).unwrap());
         std::process::exit(0);
     }
 
