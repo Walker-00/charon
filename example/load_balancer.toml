@@ -1,0 +1,37 @@
+[[load_balancer]]
+listener = "127.0.0.1:8081"
+upstreams = [
+    "upstream1",
+    "upstream2",
+]
+health_check = true
+health_check_frequency = 30
+parallel_health_check = true
+
+[load_balancer.servers.lb1]
+load_balancer_tls = true
+load_balancer_hostname = "lb1"
+load_balancer_headers = [[
+    "Header1",
+    "Value1",
+]]
+
+[[load_balancer]]
+listener = "127.0.0.1:9091"
+upstreams = [
+    "upstream3",
+    "upstream4",
+]
+health_check = true
+health_check_frequency = 60
+parallel_health_check = false
+tls_certificate = "path/to/lb_cert2"
+tls_certificate_key = "path/to/lb_key2"
+
+[load_balancer.servers."lb2.com"]
+load_balancer_tls = false
+load_balancer_hostname = "lb2.com"
+load_balancer_headers = [[
+    "Header2",
+    "Value2",
+]]
