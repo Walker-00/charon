@@ -3,6 +3,7 @@ use std::{collections::HashMap, sync::Arc};
 use pingora::{server::configuration::ServerConf, services::listening::Service};
 use pingora_proxy::HttpProxy;
 use serde::{Deserialize, Serialize};
+use tracing::info;
 
 use super::app::AppProxy;
 
@@ -31,7 +32,7 @@ pub fn proxy_service(
         return proxy;
     }
 
-    println!("TLS disabled for {}", listen_addr);
+    info!("TLS disabled for {}", listen_addr);
 
     proxy.add_tcp(listen_addr);
     proxy

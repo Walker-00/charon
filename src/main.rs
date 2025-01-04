@@ -1,4 +1,5 @@
 use std::{collections::HashMap, fs, time::Duration};
+use bat::PrettyPrinter;
 use clap::Parser;
 use load_balancer::service::{load_balancer_service, LBHostConfig};
 use pingora::prelude::background_service;
@@ -63,6 +64,10 @@ struct Config {
     load_balancer: Option<Vec<LoadBalancerConfig>>,
 }
 
+fn highlight_toml(input: &str) {
+    PrettyPrinter::new().input_from_bytes(input.as_bytes()).language("toml").print().unwrap();
+}
+
 fn main() {
     tracing_subscriber::fmt()
         .with_max_level(Level::ERROR)
@@ -73,7 +78,6 @@ fn main() {
         .init();
 
     color_eyre::install().unwrap();
-
 
     /*let ps = SyntaxSet::load_defaults_newlines();
     let ts = ThemeSet::load_defaults();
@@ -87,12 +91,15 @@ fn main() {
     // Handle example configurations
     if arg.example {
         let example = toml::to_string_pretty(&Config::new()).unwrap();
+        highlight_toml(&example);
         std::process::exit(0);
     } else if arg.example_proxy {
         let example = toml::to_string_pretty(&Config::new_proxy_example()).unwrap();
+        highlight_toml(&example);
         std::process::exit(0);
     } else if arg.example_load_balancer {
         let example = toml::to_string_pretty(&Config::new_load_balancer_example()).unwrap();
+        highlight_toml(&example);
         std::process::exit(0);
     }
 
@@ -156,7 +163,7 @@ fn main() {
         }
     }
 
-    if !proxy_is_configed || !lb_is_configed {
+    if !proxy_is_configed && !lb_is_configed {
         error!("No proxy or load balancer is configured.");
         info!("Use '--example' for a sample config.");
         std::process::exit(1);
