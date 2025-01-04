@@ -1,4 +1,4 @@
-use std::{collections::BTreeMap, sync::Arc};
+use std::{collections::HashMap, sync::Arc};
 
 use async_trait::async_trait;
 use http::header::HOST;
@@ -8,7 +8,7 @@ use pingora_proxy::{ProxyHttp, Session};
 use super::service::ProxyHostConfig;
 
 pub struct AppProxy {
-    pub host_configs: Arc<BTreeMap<String, ProxyHostConfig>>,
+    pub host_configs: Arc<HashMap<String, ProxyHostConfig>>,
 }
 
 #[async_trait]

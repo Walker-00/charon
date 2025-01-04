@@ -1,4 +1,4 @@
-use std::{collections::BTreeMap, sync::Arc};
+use std::{collections::HashMap, sync::Arc};
 
 use async_trait::async_trait;
 use http::header::HOST;
@@ -9,7 +9,7 @@ use pingora_proxy::{ProxyHttp, Session};
 use super::service::LBHostConfig;
 
 pub struct AppLB {
-    pub host_configs: Arc<BTreeMap<String, LBHostConfig>>,
+    pub host_configs: Arc<HashMap<String, LBHostConfig>>,
     pub lb_upstreams: Arc<LoadBalancer<RoundRobin>>,
 }
 
@@ -51,12 +51,6 @@ impl ProxyHttp for AppLB {
             .or_else(|| session.req_header().uri.host())
             .expect("Host header is missing");
         if let Some(host_config) = self.host_configs.get(host_header) {
-            /*let proxy_to = HttpPeer::new(
-                &host_config.proxy_addr,
-                host_config.proxy_tls,
-                host_config.proxy_hostname.clone(),
-            );
-            Ok(Box::new(proxy_to))*/
             if let Some(headers) = &host_config.load_balancer_headers {
                 for (header, value) in headers {
                     upstream_request
@@ -68,16 +62,5 @@ impl ProxyHttp for AppLB {
         } else {
             Err(pingora::Error::new(pingora_core::Custom("Host not found")))
         }
-
-        /*if host_config.is_websocket {
-            upstream_request
-                .insert_header("Upgrade", "websocket")
-                .unwrap();
-            upstream_request
-                .insert_header("Connection", "Upgrade")
-                .unwrap();
-        }
-
-        Ok(())*/
     }
 }
