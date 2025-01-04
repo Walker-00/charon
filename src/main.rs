@@ -1,5 +1,4 @@
 use std::{collections::HashMap, fs, time::Duration};
-
 use clap::Parser;
 use load_balancer::service::{load_balancer_service, LBHostConfig};
 use log::{error, info};
@@ -19,21 +18,19 @@ mod example_config;
 struct Args {
     /// Configuration file path
     #[arg(short, long)]
-    config: String,
+    config: Option<String>,
 
     /// Get Example Full Config
-    #[arg(short = 'e', long, action = clap::ArgAction::SetTrue)]
+    #[arg(short = 'e', long)]
     example: bool,
 
     /// Get Example Proxy Config
-    #[arg(short = 'p', long, action = clap::ArgAction::SetTrue)]
+    #[arg(short = 'p', long)]
     example_proxy: bool,
 
     /// Get Example Load Balancer Config
-    #[arg(short = 'l', long, action = clap::ArgAction::SetTrue)]
-    example_load_balancer: bool
-
-
+    #[arg(short = 'l', long)]
+    example_load_balancer: bool,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -59,11 +56,43 @@ struct LoadBalancerConfig {
 #[derive(Serialize, Deserialize)]
 struct Config {
     proxy: Option<Vec<ProxyConfig>>,
-    load_balancer: Option<Vec<LoadBalancerConfig>>
+    load_balancer: Option<Vec<LoadBalancerConfig>>,
 }
 
 fn main() {
+    color_eyre::install().unwrap();
     env_logger::init();
+
+    let arg = Args::parse();
+
+    // Handle example configurations
+    if arg.example {
+        println!("{}", toml::to_string_pretty(&Config::new()).unwrap());
+        std::process::exit(0);
+    } else if arg.example_proxy {
+        println!("{}", toml::to_string_pretty(&Config::new_proxy_example()).unwrap());
+        std::process::exit(0);
+    } else if arg.example_load_balancer {
+        println!("{}", toml::to_string_pretty(&Config::new_load_balancer_example()).unwrap());
+        std::process::exit(0);
+    }
+
+    // Ensure config file is provided unless one of the example flags is used
+    if arg.config.is_none() {
+        error!("Configuration file is required unless one of the example flags is provided.");
+        info!("Use '--example' for a sample config.");
+        std::process::exit(1);
+    }
+
+    let config_file = fs::read_to_string(arg.config.unwrap()).expect("Failed to open config file");
+    let config: Config = match toml::from_str(&config_file) {
+        Ok(c) => c,
+        Err(_) => {
+            error!("Failed to parse config file");
+            info!("Use '--example' for a sample config.");
+            std::process::exit(1);
+        }
+    };
 
     let opt = Opt::default();
     let mut my_server = Server::new(Some(opt)).unwrap();
@@ -71,18 +100,6 @@ fn main() {
 
     let mut proxy_is_configed = false;
     let mut lb_is_configed = false;
-
-    let arg = Args::parse();
-
-    let config_file = fs::read_to_string(arg.config).expect("Failed to open file");
-    let config: Config = if let Ok(config) = toml::from_str(&config_file) {
-        config
-    } else {
-        error!("Failed to parse config file");
-        info!("Get Example config: charon --example");
-        info!("Exiting...");
-        std::process::exit(1);
-    };
 
     if let Some(load_balancers) = config.load_balancer {
         if !load_balancers.is_empty() {
@@ -100,10 +117,9 @@ fn main() {
                 if let Some(frequency) = i.health_check_frequency {
                     upstreams.health_check_frequency = Some(Duration::from_secs(frequency));
                 }
-
             }
 
-            let background = background_service(&format!("healt check for {}", &i.listener), upstreams);
+            let background = background_service(&format!("health check for {}", &i.listener), upstreams);
             let upstreams = background.task();
 
             let load_balancer = load_balancer_service(&my_server.configuration, &i.listener, i.tls_certificate, i.tls_certificate_key, i.servers, upstreams);
@@ -114,7 +130,7 @@ fn main() {
 
     if let Some(proxy) = config.proxy {
         if !proxy.is_empty() {
-            proxy_is_configed = true; 
+            proxy_is_configed = true;
         }
         for i in proxy {
             let proxy = proxy_service(&my_server.configuration, &i.listener, i.tls_certificate, i.tls_certificate_key, i.servers);
@@ -123,11 +139,11 @@ fn main() {
     }
 
     if !proxy_is_configed || !lb_is_configed {
-        error!("No proxy or load balancer is configured!!");
-        info!("Get Example config: charon --example");
-        info!("Exiting...");
+        error!("No proxy or load balancer is configured.");
+        info!("Use '--example' for a sample config.");
         std::process::exit(1);
     }
 
     my_server.run_forever();
 }
+
