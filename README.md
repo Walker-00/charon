@@ -19,10 +19,14 @@ in the end, you are nothing more than a passenger, crossing the river of interwe
 ## Features
 
 - **Proxy Service:** Provides HTTP proxy functionality, routing requests to different hosts based on the `Host` header in the request.
-- **Load Balancer Service:** Implements a load balancer with Round Robin selection and support for multiple upstream servers. 
+- **Load Balancer Service:** Implements a load balancer with Round Robin selection and support for multiple upstream servers.
 - **TLS Support:** Configurable TLS for secure communication. You can specify a certificate and key for secure connections.
 - **Health Checks:** Configurable health checks for load balancer upstreams to ensure availability.
 - **Configurable Headers:** Ability to inject headers into requests based on the host configuration.
+
+## Performance Benchmark
+
+Charon has been benchmarked to handle up to **73,100.03** concurrent requests, outperforming other proxy servers like **Nginx**, which handles around **17,744.92** concurrent requests. This means **Charon** is approximately **312.8% faster** than **Nginx**, making it a highly efficient solution for high-performance applications.
 
 ## Installation
 
@@ -38,7 +42,7 @@ The configuration file uses TOML format and supports specifying proxy and load b
 
 ### Example Configuration
 
-check [example](https://github.com/Walker-00/charon/tree/rust/example) folder for more config.
+Check the [example](https://github.com/Walker-00/charon/tree/rust/example) folder for more config.
 
 ```toml
 [[proxy]]
