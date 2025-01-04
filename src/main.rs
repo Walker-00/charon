@@ -7,6 +7,7 @@ use proxy::service::{proxy_service, ProxyHostConfig};
 use serde::{Deserialize, Serialize};
 
 mod proxy;
+mod load_balancer;
 
 #[derive(clap::Parser, Debug)]
 #[command(version, about, long_about = None)]
