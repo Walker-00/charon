@@ -5,6 +5,7 @@ use crate::{load_balancer::service::LBHostConfig, proxy::service::ProxyHostConfi
 impl Config {
     pub fn new() -> Self {
         Self {
+            prometheus_addr: Some("0.0.0.0:9090".to_string()),
             proxy: Some(vec![
                 ProxyConfig {
                     listener: "0.0.0.0:8080".to_string(),
@@ -149,6 +150,7 @@ impl Config {
         });
 
         Self {
+            prometheus_addr: None,
             proxy: Some(vec![
                 ProxyConfig {
                     listener: "127.0.0.1:8080".to_string(),
@@ -182,6 +184,7 @@ impl Config {
         });
 
         Self {
+            prometheus_addr: Some("0.0.0.0:8080".to_string()),
             proxy: None,
             load_balancer: Some(vec![
                 LoadBalancerConfig {

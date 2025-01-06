@@ -2,7 +2,7 @@ use std::{collections::HashMap, fs, time::Duration};
 use bat::PrettyPrinter;
 use clap::Parser;
 use load_balancer::service::{load_balancer_service, LBHostConfig};
-use pingora::prelude::background_service;
+use pingora::{prelude::background_service, services::listening::Service};
 use pingora_core::server::Server;
 use pingora_core::server::configuration::Opt;
 use pingora_load_balancing::{health_check, LoadBalancer};
@@ -60,6 +60,7 @@ struct LoadBalancerConfig {
 
 #[derive(Serialize, Deserialize)]
 struct Config {
+    prometheus_addr: Option<String>,
     proxy: Option<Vec<ProxyConfig>>,
     load_balancer: Option<Vec<LoadBalancerConfig>>,
 }
@@ -167,6 +168,12 @@ fn main() {
         error!("No proxy or load balancer is configured.");
         info!("Use '--example' for a sample config.");
         std::process::exit(1);
+    }
+
+    if let Some(prometheus_addr) = config.prometheus_addr {
+        let mut prometheus_service = Service::prometheus_http_service();
+        prometheus_service.add_tcp(&prometheus_addr);
+        my_server.add_service(prometheus_service);
     }
 
     my_server.run_forever();

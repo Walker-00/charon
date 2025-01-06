@@ -1,10 +1,12 @@
 [[proxy]]
 listener = "127.0.0.1:8080"
+tls_certificate = "path/to/cert1"
+tls_certificate_key = "path/to/key1"
 
 [proxy.servers.server1]
 proxy_addr = "192.168.1.1"
 proxy_tls = true
-proxy_hostname = "server1"
+proxy_hostname = "proxy1.com"
 proxy_headers = [[
     "Header1",
     "Value1",
@@ -12,10 +14,10 @@ proxy_headers = [[
 
 [[proxy]]
 listener = "127.0.0.1:9090"
-tls_certificate = "path/to/cert2" # Optional
-tls_certificate_key = "path/to/key2" # Optional
+tls_certificate = "path/to/cert2"
+tls_certificate_key = "path/to/key2"
 
-[proxy.servers."proxy2.com"] # the name after the servers should match with proxy_hostname
+[proxy.servers.server2]
 proxy_addr = "192.168.1.2"
 proxy_tls = false
 proxy_hostname = "proxy2.com"

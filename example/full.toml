@@ -1,3 +1,5 @@
+prometheus_addr = "0.0.0.0:9090"
+
 [[proxy]]
 listener = "0.0.0.0:8080"
 
@@ -24,15 +26,6 @@ listener = "0.0.0.0:9090"
 tls_certificate = "cert.pem"
 tls_certificate_key = "key.pem"
 
-[proxy.servers."newproxy.com"]
-proxy_addr = "127.0.0.1:9001"
-proxy_tls = false
-proxy_hostname = "newproxy.com"
-proxy_headers = [[
-    "X-New-Proxy-Header",
-    "new-proxy-value",
-]]
-
 [proxy.servers."proxyexample.com"]
 proxy_addr = "127.0.0.1:9000"
 proxy_tls = true
@@ -40,6 +33,15 @@ proxy_hostname = "proxyexample.com"
 proxy_headers = [[
     "X-Proxy-Header",
     "proxy-value",
+]]
+
+[proxy.servers."newproxy.com"]
+proxy_addr = "127.0.0.1:9001"
+proxy_tls = false
+proxy_hostname = "newproxy.com"
+proxy_headers = [[
+    "X-New-Proxy-Header",
+    "new-proxy-value",
 ]]
 
 [[load_balancer]]
