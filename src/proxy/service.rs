@@ -13,6 +13,7 @@ pub struct ProxyHostConfig {
     pub proxy_tls: bool,
     pub proxy_hostname: String,
     pub proxy_headers: Option<Vec<(String, String)>>,
+    pub proxy_uds: Option<bool>,
 }
 
 pub fn proxy_service(

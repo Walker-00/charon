@@ -15,8 +15,9 @@ impl Config {
                         (
                             "example.com".to_string(),
                             ProxyHostConfig {
-                                proxy_addr: "127.0.0.1:8000".to_string(),
+                                proxy_addr: "/tmp/example.sock".to_string(),
                                 proxy_tls: false,
+                                proxy_uds: Some(true),
                                 proxy_hostname: "example.com".to_string(),
                                 proxy_headers: Some(vec![
                                     ("X-Example-Header".to_string(), "value".to_string())
@@ -28,6 +29,7 @@ impl Config {
                             ProxyHostConfig {
                                 proxy_addr: "127.0.0.1:8001".to_string(),
                                 proxy_tls: true,
+                                proxy_uds: None,
                                 proxy_hostname: "another.com".to_string(),
                                 proxy_headers: Some(vec![
                                     ("X-Another-Header".to_string(), "another-value".to_string())
@@ -44,8 +46,9 @@ impl Config {
                         (
                             "proxyexample.com".to_string(),
                             ProxyHostConfig {
-                                proxy_addr: "127.0.0.1:9000".to_string(),
+                                proxy_addr: "/tmp/proxy.sock".to_string(),
                                 proxy_tls: true,
+                                proxy_uds: Some(true),
                                 proxy_hostname: "proxyexample.com".to_string(),
                                 proxy_headers: Some(vec![
                                     ("X-Proxy-Header".to_string(), "proxy-value".to_string())
@@ -57,6 +60,7 @@ impl Config {
                             ProxyHostConfig {
                                 proxy_addr: "127.0.0.1:9001".to_string(),
                                 proxy_tls: false,
+                                proxy_uds: None,
                                 proxy_hostname: "newproxy.com".to_string(),
                                 proxy_headers: Some(vec![
                                     ("X-New-Proxy-Header".to_string(), "new-proxy-value".to_string())
@@ -135,8 +139,9 @@ impl Config {
     pub fn new_proxy_example() -> Self {
         let mut proxy_servers = HashMap::new();
         proxy_servers.insert("server1".to_string(), ProxyHostConfig {
-            proxy_addr: "192.168.1.1".to_string(),
+            proxy_addr: "/tmp/proxy.sock".to_string(),
             proxy_tls: true,
+            proxy_uds: Some(true),
             proxy_hostname: "proxy1.com".to_string(),
             proxy_headers: Some(vec![("Header1".to_string(), "Value1".to_string())]),
         });
@@ -145,6 +150,7 @@ impl Config {
         proxy_servers2.insert("server2".to_string(), ProxyHostConfig {
             proxy_addr: "192.168.1.2".to_string(),
             proxy_tls: false,
+            proxy_uds: None,
             proxy_hostname: "proxy2.com".to_string(),
             proxy_headers: Some(vec![("Header2".to_string(), "Value2".to_string())]),
         });
