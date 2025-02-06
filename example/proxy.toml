@@ -6,7 +6,6 @@ tls_certificate_key = "path/to/key1"
 [proxy.servers.server1]
 proxy_addr = "/tmp/proxy.sock"
 proxy_tls = true
-proxy_hostname = "proxy1.com"
 proxy_headers = [[
     "Header1",
     "Value1",
@@ -21,7 +20,6 @@ tls_certificate_key = "path/to/key2"
 [proxy.servers.server2]
 proxy_addr = "192.168.1.2"
 proxy_tls = false
-proxy_hostname = "proxy2.com"
 proxy_headers = [[
     "Header2",
     "Value2",
