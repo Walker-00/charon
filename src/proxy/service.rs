@@ -11,7 +11,6 @@ use super::app::AppProxy;
 pub struct ProxyHostConfig {
     pub proxy_addr: String,
     pub proxy_tls: bool,
-    pub proxy_hostname: String,
     pub proxy_headers: Option<Vec<(String, String)>>,
     pub proxy_uds: Option<bool>,
 }
@@ -27,9 +26,10 @@ pub fn proxy_service(
     let mut proxy = pingora_proxy::http_proxy_service(server_conf, AppProxy { host_configs });
     if let (Some(cert_path), Some(key_path)) = (tls_certificate, tls_certificate_key) {
         let mut tls_settings =
-            pingora_core::listeners::tls::TlsSettings::intermediate(&cert_path, &key_path).expect("TLS error");
+            pingora_core::listeners::tls::TlsSettings::intermediate(&cert_path, &key_path)
+                .expect("TLS error");
         tls_settings.enable_h2();
-        proxy.add_tls_with_settings(listen_addr, None, tls_settings);    
+        proxy.add_tls_with_settings(listen_addr, None, tls_settings);
         return proxy;
     }
 

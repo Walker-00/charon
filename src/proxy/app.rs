@@ -25,16 +25,19 @@ impl ProxyHttp for AppProxy {
 
         if let Some(host_config) = self.host_configs.get(host_header) {
             if let Some(true) = host_config.proxy_uds {
-                return Ok(Box::new(HttpPeer::new_uds(
-                    &host_config.proxy_addr,
-                    host_config.proxy_tls,
-                    host_config.proxy_hostname.clone(),
-                ).unwrap()));
+                return Ok(Box::new(
+                    HttpPeer::new_uds(
+                        &host_config.proxy_addr,
+                        host_config.proxy_tls,
+                        host_header.to_string(),
+                    )
+                    .unwrap(),
+                ));
             }
             let proxy_to = HttpPeer::new(
                 &host_config.proxy_addr,
                 host_config.proxy_tls,
-                host_config.proxy_hostname.clone(),
+                host_header.to_string(),
             );
             Ok(Box::new(proxy_to))
         } else {

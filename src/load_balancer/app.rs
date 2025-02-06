@@ -3,7 +3,7 @@ use std::{collections::HashMap, sync::Arc};
 use async_trait::async_trait;
 use http::header::HOST;
 use pingora::{Result, prelude::HttpPeer};
-use pingora_load_balancing::{prelude::RoundRobin, LoadBalancer};
+use pingora_load_balancing::{LoadBalancer, prelude::RoundRobin};
 use pingora_proxy::{ProxyHttp, Session};
 
 use super::service::LBHostConfig;
@@ -31,7 +31,7 @@ impl ProxyHttp for AppLB {
             let proxy_to = HttpPeer::new(
                 upstream,
                 host_config.load_balancer_tls,
-                host_config.load_balancer_hostname.clone(),
+                host_header.to_string(),
             );
             Ok(Box::new(proxy_to))
         } else {
