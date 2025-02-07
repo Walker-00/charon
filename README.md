@@ -48,22 +48,23 @@ The configuration file uses TOML format and supports specifying proxy and load b
 Check the [example](https://github.com/Walker-00/charon/tree/rust/example) folder for more config.
 
 ```toml
+prometheus_addr = "0.0.0.0:9090"
+
 [[proxy]]
 listener = "0.0.0.0:8080"
 
 [proxy.servers."example.com"]
-proxy_addr = "127.0.0.1:8000"
+proxy_addr = "/tmp/example.sock"
 proxy_tls = false
-proxy_hostname = "example.com"
 proxy_headers = [[
     "X-Example-Header",
     "value",
 ]]
+proxy_uds = true
 
 [proxy.servers."another.com"]
 proxy_addr = "127.0.0.1:8001"
 proxy_tls = true
-proxy_hostname = "another.com"
 proxy_headers = [[
     "X-Another-Header",
     "another-value",
@@ -77,20 +78,19 @@ tls_certificate_key = "key.pem"
 [proxy.servers."newproxy.com"]
 proxy_addr = "127.0.0.1:9001"
 proxy_tls = false
-proxy_hostname = "newproxy.com"
 proxy_headers = [[
     "X-New-Proxy-Header",
     "new-proxy-value",
 ]]
 
 [proxy.servers."proxyexample.com"]
-proxy_addr = "127.0.0.1:9000"
+proxy_addr = "/tmp/proxy.sock"
 proxy_tls = true
-proxy_hostname = "proxyexample.com"
 proxy_headers = [[
     "X-Proxy-Header",
     "proxy-value",
 ]]
+proxy_uds = true
 
 [[load_balancer]]
 listener = "0.0.0.0:7070"
@@ -102,20 +102,18 @@ health_check = true
 health_check_frequency = 30
 parallel_health_check = true
 
-[load_balancer.servers."another.com"]
-load_balancer_tls = true
-load_balancer_hostname = "another.com"
-load_balancer_headers = [[
-    "X-LB-Another",
-    "another-value",
-]]
-
 [load_balancer.servers."example.com"]
 load_balancer_tls = false
-load_balancer_hostname = "example.com"
 load_balancer_headers = [[
     "X-LB-Example",
     "value",
+]]
+
+[load_balancer.servers."another.com"]
+load_balancer_tls = true
+load_balancer_headers = [[
+    "X-LB-Another",
+    "another-value",
 ]]
 
 [[load_balancer]]
@@ -129,21 +127,20 @@ parallel_health_check = false
 tls_certificate = "loadbalancer_cert.pem"
 tls_certificate_key = "loadbalancer_key.pem"
 
+[load_balancer.servers."proxyexample.com"]
+load_balancer_tls = true
+load_balancer_headers = [[
+    "X-Proxy-LB-Header",
+    "proxy-lb-value",
+]]
+
 [load_balancer.servers."newproxy.com"]
 load_balancer_tls = false
-load_balancer_hostname = "newproxy.com"
 load_balancer_headers = [[
     "X-New-Proxy-LB-Header",
     "new-proxy-lb-value",
 ]]
 
-[load_balancer.servers."proxyexample.com"]
-load_balancer_tls = true
-load_balancer_hostname = "proxyexample.com"
-load_balancer_headers = [[
-    "X-Proxy-LB-Header",
-    "proxy-lb-value",
-]]
 ```
 
 ### Command Line Arguments
