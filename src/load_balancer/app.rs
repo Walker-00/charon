@@ -11,6 +11,12 @@ use super::service::LBHostConfig;
 pub struct AppLB {
     pub host_configs: Arc<HashMap<String, LBHostConfig>>,
     pub lb_upstreams: Arc<LoadBalancer<RoundRobin>>,
+    pub routes: Option<HashMap<String, AppPathBaseLB>>,
+}
+
+pub struct AppPathBaseLB {
+    pub host_configs: Arc<HashMap<String, LBHostConfig>>,
+    pub lb_upstreams: Arc<LoadBalancer<RoundRobin>>,
 }
 
 #[async_trait]
