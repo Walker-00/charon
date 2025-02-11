@@ -15,6 +15,8 @@ bat = "0.24.0"
 clap = { version = "4.5.23", features = ["derive"] }
 color-eyre = "0.6.3"
 http = "1.2.0"
+pest = "2.7.15"
+pest_derive = "2.7.15"
 pingora = { version = "0.4.0", features = ["proxy"] }
 pingora-core = { version = "0.4.0", features = ["rustls"] }
 pingora-http = "0.4.0"
