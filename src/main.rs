@@ -1,15 +1,16 @@
 use bat::PrettyPrinter;
 use clap::Parser;
-use load_balancer::service::{LBHostConfig, load_balancer_service};
+use load_balancer::service::load_balancer_service;
 use pingora::{prelude::background_service, services::listening::Service};
 use pingora_core::server::Server;
 use pingora_core::server::configuration::Opt;
 use pingora_load_balancing::{LoadBalancer, health_check};
-use proxy::service::{ProxyHostConfig, proxy_service};
-use serde::{Deserialize, Serialize};
-use std::{collections::HashMap, fs, time::Duration};
+use proxy::service::proxy_service;
+use std::{fs, time::Duration};
 use structures::{
-    general::Args, load_balancer_structure::LoadBalancerConfig, proxy_structure::ProxyConfig,
+    general::{Args, Config},
+    load_balancer_structure::LoadBalancerConfig,
+    proxy_structure::ProxyConfig,
 };
 /*use syntect::easy::HighlightLines;
 use syntect::parsing::SyntaxSet;
@@ -21,13 +22,6 @@ mod example_config;
 mod load_balancer;
 mod proxy;
 mod structures;
-
-#[derive(Serialize, Deserialize)]
-struct Config {
-    prometheus_addr: Option<String>,
-    proxy: Option<Vec<ProxyConfig>>,
-    load_balancer: Option<Vec<LoadBalancerConfig>>,
-}
 
 fn highlight_toml(input: &str) {
     PrettyPrinter::new()

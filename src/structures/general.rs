@@ -1,3 +1,7 @@
+use serde::{Deserialize, Serialize};
+
+use super::{load_balancer_structure::LoadBalancerConfig, proxy_structure::ProxyConfig};
+
 #[derive(clap::Parser, Debug)]
 #[command(
     version,
@@ -20,4 +24,11 @@ pub struct Args {
     /// Get Example Load Balancer Config
     #[arg(short = 'l', long)]
     pub example_load_balancer: bool,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct Config {
+    pub prometheus_addr: Option<String>,
+    pub proxy: Option<Vec<ProxyConfig>>,
+    pub load_balancer: Option<Vec<LoadBalancerConfig>>,
 }
