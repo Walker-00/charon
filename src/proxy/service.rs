@@ -7,23 +7,6 @@ use tracing::info;
 
 use super::app::AppProxy;
 
-#[derive(Serialize, Deserialize)]
-pub struct ProxyHostConfig {
-    pub proxy_addr: String,
-    pub proxy_tls: bool,
-    pub proxy_headers: Option<Vec<(String, String)>>,
-    pub proxy_uds: Option<bool>,
-    pub routes: Option<HashMap<String, ProxyPathBaseHostConfig>>,
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct ProxyPathBaseHostConfig {
-    pub proxy_addr: String,
-    pub proxy_tls: bool,
-    pub proxy_headers: Option<Vec<(String, String)>>,
-    pub proxy_uds: Option<bool>,
-}
-
 pub fn proxy_service(
     server_conf: &Arc<ServerConf>,
     listen_addr: &str,
