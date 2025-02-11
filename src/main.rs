@@ -21,18 +21,6 @@ mod proxy;
 mod structures;
 
 #[derive(Serialize, Deserialize)]
-struct LoadBalancerConfig {
-    listener: String,
-    upstreams: Vec<String>,
-    health_check: Option<bool>,
-    health_check_frequency: Option<u64>,
-    parallel_health_check: Option<bool>,
-    tls_certificate: Option<String>,
-    tls_certificate_key: Option<String>,
-    servers: HashMap<String, LBHostConfig>,
-}
-
-#[derive(Serialize, Deserialize)]
 struct Config {
     prometheus_addr: Option<String>,
     proxy: Option<Vec<ProxyConfig>>,
