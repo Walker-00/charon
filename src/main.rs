@@ -1,25 +1,30 @@
-use std::{collections::HashMap, fs, time::Duration};
 use bat::PrettyPrinter;
 use clap::Parser;
-use load_balancer::service::{load_balancer_service, LBHostConfig};
+use load_balancer::service::{LBHostConfig, load_balancer_service};
 use pingora::{prelude::background_service, services::listening::Service};
 use pingora_core::server::Server;
 use pingora_core::server::configuration::Opt;
-use pingora_load_balancing::{health_check, LoadBalancer};
-use proxy::service::{proxy_service, ProxyHostConfig};
+use pingora_load_balancing::{LoadBalancer, health_check};
+use proxy::service::{ProxyHostConfig, proxy_service};
 use serde::{Deserialize, Serialize};
+use std::{collections::HashMap, fs, time::Duration};
 /*use syntect::easy::HighlightLines;
 use syntect::parsing::SyntaxSet;
 use syntect::highlighting::{Style, ThemeSet};
 use syntect::util::{as_24_bit_terminal_escaped, LinesWithEndings};*/
-use tracing::{error, info, Level};
+use tracing::{Level, error, info};
 
-mod proxy;
-mod load_balancer;
 mod example_config;
+mod load_balancer;
+mod proxy;
+mod structures;
 
 #[derive(clap::Parser, Debug)]
-#[command(version, about = "Charon: The Proxy Server", long_about = "Charon is a proxy server, built on Pingora, that ferries packets across the digital river—transferring data from the chaotic internet to servers, much like the mythical Charon guided souls to the underworld.")]
+#[command(
+    version,
+    about = "Charon: The Proxy Server",
+    long_about = "Charon is a proxy server, built on Pingora, that ferries packets across the digital river—transferring data from the chaotic internet to servers, much like the mythical Charon guided souls to the underworld."
+)]
 struct Args {
     /// Configuration file path
     #[arg(short, long)]
@@ -66,7 +71,11 @@ struct Config {
 }
 
 fn highlight_toml(input: &str) {
-    PrettyPrinter::new().input_from_bytes(input.as_bytes()).language("toml").print().unwrap();
+    PrettyPrinter::new()
+        .input_from_bytes(input.as_bytes())
+        .language("toml")
+        .print()
+        .unwrap();
 }
 
 fn main() {
@@ -145,10 +154,18 @@ fn main() {
                 }
             }
 
-            let background = background_service(&format!("health check for {}", &i.listener), upstreams);
+            let background =
+                background_service(&format!("health check for {}", &i.listener), upstreams);
             let upstreams = background.task();
 
-            let load_balancer = load_balancer_service(&my_server.configuration, &i.listener, i.tls_certificate, i.tls_certificate_key, i.servers, upstreams);
+            let load_balancer = load_balancer_service(
+                &my_server.configuration,
+                &i.listener,
+                i.tls_certificate,
+                i.tls_certificate_key,
+                i.servers,
+                upstreams,
+            );
             my_server.add_service(load_balancer);
             my_server.add_service(background);
         }
@@ -159,7 +176,13 @@ fn main() {
             proxy_is_configed = true;
         }
         for i in proxy {
-            let proxy = proxy_service(&my_server.configuration, &i.listener, i.tls_certificate, i.tls_certificate_key, i.servers);
+            let proxy = proxy_service(
+                &my_server.configuration,
+                &i.listener,
+                i.tls_certificate,
+                i.tls_certificate_key,
+                i.servers,
+            );
             my_server.add_service(proxy);
         }
     }
@@ -178,4 +201,3 @@ fn main() {
 
     my_server.run_forever();
 }
-
