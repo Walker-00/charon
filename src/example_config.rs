@@ -2,7 +2,10 @@ use std::collections::HashMap;
 
 use crate::{
     Config, LoadBalancerConfig, ProxyConfig,
-    structures::{load_balancer_structure::LBHostConfig, proxy_structure::ProxyHostConfig},
+    structures::{
+        load_balancer_structure::LBHostConfig,
+        proxy_structure::{ProxyHostConfig, ProxyPathBaseHostConfig},
+    },
 };
 
 impl Config {
@@ -23,7 +26,20 @@ impl Config {
                                 "X-Example-Header".to_string(),
                                 "value".to_string(),
                             )]),
-                            routes: None,
+                            routes: Some(HashMap::from([
+                                ("/api/v1".to_string(), ProxyPathBaseHostConfig {
+                                    proxy_addr: Some("/tmp/example.sock".to_string()),
+                                    proxy_tls: false,
+                                    proxy_uds: Some(true),
+                                    proxy_headers: None,
+                                }),
+                                ("/status".to_string(), ProxyPathBaseHostConfig {
+                                    proxy_addr: None,
+                                    proxy_tls: false,
+                                    proxy_uds: None,
+                                    proxy_headers: None,
+                                }),
+                            ])),
                         }),
                         ("another.com".to_string(), ProxyHostConfig {
                             proxy_addr: "127.0.0.1:8001".to_string(),
@@ -33,7 +49,20 @@ impl Config {
                                 "X-Another-Header".to_string(),
                                 "another-value".to_string(),
                             )]),
-                            routes: None,
+                            routes: Some(HashMap::from([
+                                ("/home".to_string(), ProxyPathBaseHostConfig {
+                                    proxy_addr: None,
+                                    proxy_tls: true,
+                                    proxy_uds: None,
+                                    proxy_headers: None,
+                                }),
+                                ("/login".to_string(), ProxyPathBaseHostConfig {
+                                    proxy_addr: None,
+                                    proxy_tls: true,
+                                    proxy_uds: None,
+                                    proxy_headers: None,
+                                }),
+                            ])),
                         }),
                     ]),
                 },
@@ -50,7 +79,20 @@ impl Config {
                                 "X-Proxy-Header".to_string(),
                                 "proxy-value".to_string(),
                             )]),
-                            routes: None,
+                            routes: Some(HashMap::from([
+                                ("/data".to_string(), ProxyPathBaseHostConfig {
+                                    proxy_addr: None,
+                                    proxy_tls: true,
+                                    proxy_uds: None,
+                                    proxy_headers: None,
+                                }),
+                                ("/info".to_string(), ProxyPathBaseHostConfig {
+                                    proxy_addr: None,
+                                    proxy_tls: true,
+                                    proxy_uds: None,
+                                    proxy_headers: None,
+                                }),
+                            ])),
                         }),
                         ("newproxy.com".to_string(), ProxyHostConfig {
                             proxy_addr: "127.0.0.1:9001".to_string(),
@@ -60,7 +102,20 @@ impl Config {
                                 "X-New-Proxy-Header".to_string(),
                                 "new-proxy-value".to_string(),
                             )]),
-                            routes: None,
+                            routes: Some(HashMap::from([
+                                ("/dashboard".to_string(), ProxyPathBaseHostConfig {
+                                    proxy_addr: None,
+                                    proxy_tls: false,
+                                    proxy_uds: None,
+                                    proxy_headers: None,
+                                }),
+                                ("/settings".to_string(), ProxyPathBaseHostConfig {
+                                    proxy_addr: None,
+                                    proxy_tls: false,
+                                    proxy_uds: None,
+                                    proxy_headers: None,
+                                }),
+                            ])),
                         }),
                     ]),
                 },
@@ -127,7 +182,20 @@ impl Config {
             proxy_tls: true,
             proxy_uds: Some(true),
             proxy_headers: Some(vec![("Header1".to_string(), "Value1".to_string())]),
-            routes: None,
+            routes: Some(HashMap::from([
+                ("/route1".to_string(), ProxyPathBaseHostConfig {
+                    proxy_addr: None,
+                    proxy_tls: true,
+                    proxy_uds: None,
+                    proxy_headers: None,
+                }),
+                ("/route2".to_string(), ProxyPathBaseHostConfig {
+                    proxy_addr: None,
+                    proxy_tls: true,
+                    proxy_uds: None,
+                    proxy_headers: None,
+                }),
+            ])),
         });
 
         let mut proxy_servers2 = HashMap::new();
@@ -136,7 +204,20 @@ impl Config {
             proxy_tls: false,
             proxy_uds: None,
             proxy_headers: Some(vec![("Header2".to_string(), "Value2".to_string())]),
-            routes: None,
+            routes: Some(HashMap::from([
+                ("/home".to_string(), ProxyPathBaseHostConfig {
+                    proxy_addr: None,
+                    proxy_tls: false,
+                    proxy_uds: None,
+                    proxy_headers: None,
+                }),
+                ("/status".to_string(), ProxyPathBaseHostConfig {
+                    proxy_addr: None,
+                    proxy_tls: false,
+                    proxy_uds: None,
+                    proxy_headers: None,
+                }),
+            ])),
         });
 
         Self {
