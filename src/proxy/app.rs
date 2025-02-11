@@ -5,7 +5,7 @@ use http::header::HOST;
 use pingora::{Result, prelude::HttpPeer};
 use pingora_proxy::{ProxyHttp, Session};
 
-use super::service::ProxyHostConfig;
+use crate::structures::proxy_structure::ProxyHostConfig;
 
 pub struct AppProxy {
     pub host_configs: Arc<HashMap<String, ProxyHostConfig>>,

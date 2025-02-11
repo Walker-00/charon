@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::{
     Config, LoadBalancerConfig, ProxyConfig, load_balancer::service::LBHostConfig,
-    proxy::service::ProxyHostConfig,
+    structures::proxy_structure::ProxyHostConfig,
 };
 
 impl Config {

@@ -2,8 +2,9 @@ use std::{collections::HashMap, sync::Arc};
 
 use pingora::{server::configuration::ServerConf, services::listening::Service};
 use pingora_proxy::HttpProxy;
-use serde::{Deserialize, Serialize};
 use tracing::info;
+
+use crate::structures::proxy_structure::ProxyHostConfig;
 
 use super::app::AppProxy;
 
