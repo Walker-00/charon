@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
 use crate::{
-    Config, LoadBalancerConfig, ProxyConfig, load_balancer::service::LBHostConfig,
-    structures::proxy_structure::ProxyHostConfig,
+    Config, LoadBalancerConfig, ProxyConfig,
+    structures::{load_balancer_structure::LBHostConfig, proxy_structure::ProxyHostConfig},
 };
 
 impl Config {

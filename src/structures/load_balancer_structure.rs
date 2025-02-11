@@ -2,8 +2,6 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::load_balancer::service::LBHostConfig;
-
 #[derive(Serialize, Deserialize)]
 pub struct LoadBalancerConfig {
     pub listener: String,
@@ -14,4 +12,10 @@ pub struct LoadBalancerConfig {
     pub tls_certificate: Option<String>,
     pub tls_certificate_key: Option<String>,
     pub servers: HashMap<String, LBHostConfig>,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct LBHostConfig {
+    pub load_balancer_tls: bool,
+    pub load_balancer_headers: Option<Vec<(String, String)>>,
 }

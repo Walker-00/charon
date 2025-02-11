@@ -3,15 +3,10 @@ use std::{collections::HashMap, sync::Arc};
 use pingora::{server::configuration::ServerConf, services::listening::Service};
 use pingora_load_balancing::{LoadBalancer, prelude::RoundRobin};
 use pingora_proxy::HttpProxy;
-use serde::{Deserialize, Serialize};
+
+use crate::structures::load_balancer_structure::LBHostConfig;
 
 use super::app::AppLB;
-
-#[derive(Serialize, Deserialize)]
-pub struct LBHostConfig {
-    pub load_balancer_tls: bool,
-    pub load_balancer_headers: Option<Vec<(String, String)>>,
-}
 
 pub fn load_balancer_service(
     server_conf: &Arc<ServerConf>,
