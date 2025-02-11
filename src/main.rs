@@ -1,3 +1,4 @@
+use acheron_parser::acheron;
 use bat::PrettyPrinter;
 use clap::Parser;
 use load_balancer::service::load_balancer_service;
@@ -74,12 +75,16 @@ fn main() {
     }
 
     let config_file = fs::read_to_string(arg.config.unwrap()).expect("Failed to open config file");
-    let config: Config = match toml::from_str(&config_file) {
-        Ok(c) => c,
-        Err(_) => {
-            error!("Failed to parse config file");
-            info!("Use '--example' for a sample config.");
-            std::process::exit(1);
+    let config = if let Ok(config) = acheron(&config_file) {
+        config
+    } else {
+        match toml::from_str(&config_file) {
+            Ok(c) => c,
+            Err(_) => {
+                error!("Failed to parse config file");
+                info!("Use '--example' for a sample config.");
+                std::process::exit(1);
+            }
         }
     };
 

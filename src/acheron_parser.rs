@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, fmt};
 
 use pest::Parser;
 use pest_derive::Parser;
@@ -12,6 +12,29 @@ use crate::structures::{
 #[derive(Parser)]
 #[grammar = "acheron_grammar.pest"]
 pub struct ConfigParser;
+
+#[derive(Debug)]
+pub enum AcheronError {
+    IoError(std::io::Error),
+    ParseError(String),
+    ValidationError(String),
+}
+
+impl fmt::Display for AcheronError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            AcheronError::IoError(err) => write!(f, "I/O Error: {}", err),
+            AcheronError::ParseError(err) => write!(f, "Parsing Error: {}", err),
+            AcheronError::ValidationError(err) => write!(f, "Validation Error: {}", err),
+        }
+    }
+}
+
+impl From<std::io::Error> for AcheronError {
+    fn from(err: std::io::Error) -> Self {
+        AcheronError::IoError(err)
+    }
+}
 
 fn parse_proxy_config(pair: pest::iterators::Pair<Rule>) -> ProxyConfig {
     let mut listener = String::new();
@@ -254,12 +277,14 @@ fn parse_headers(pair: pest::iterators::Pair<Rule>) -> Vec<(String, String)> {
         .collect()
 }
 
-fn acheron(config: &str) -> Config {
-    let input = std::fs::read_to_string(config).unwrap();
-    let parsed = ConfigParser::parse(Rule::file, &input)
-        .expect("Failed to parse input")
+pub fn acheron(input: &str) -> Result<Config, AcheronError> {
+    let parsed = ConfigParser::parse(Rule::file, input)
+        .map_err(|e| AcheronError::ParseError(format!("Failed to parse input: {}", e)))?
         .next()
-        .unwrap();
+        .ok_or_else(|| {
+            AcheronError::ParseError("No root pair found in the parsed input.".to_string())
+        })?;
+
     let mut config = Config::new();
 
     for pair in parsed.into_inner() {
@@ -268,7 +293,11 @@ fn acheron(config: &str) -> Config {
                 config.prometheus_addr = Some(
                     pair.into_inner()
                         .next()
-                        .unwrap()
+                        .ok_or_else(|| {
+                            AcheronError::ValidationError(
+                                "Missing prometheus_addr value.".to_string(),
+                            )
+                        })?
                         .as_str()
                         .trim()
                         .trim_matches('"')
@@ -277,29 +306,28 @@ fn acheron(config: &str) -> Config {
             }
             Rule::main_proxy_config => {
                 let proxy_config = parse_proxy_config(pair);
-
-                if let Some(ref mut proxy_configs) = config.proxy {
-                    proxy_configs.push(proxy_config);
-                } else {
-                    config.proxy = Some(vec![proxy_config]);
-                }
+                config.proxy.get_or_insert_with(Vec::new).push(proxy_config);
             }
             Rule::main_lb_config => {
                 let load_balancer_config = parse_load_balancer_config(pair);
-
-                if let Some(ref mut lb_configs) = config.load_balancer {
-                    lb_configs.push(load_balancer_config);
-                } else {
-                    config.load_balancer = Some(vec![load_balancer_config])
-                }
+                config
+                    .load_balancer
+                    .get_or_insert_with(Vec::new)
+                    .push(load_balancer_config);
             }
             Rule::EOI => {
-                return config;
+                return Ok(config);
             }
             _ => {
-                panic!("No Match {pair}");
+                return Err(AcheronError::ParseError(format!(
+                    "Unexpected rule: {:?}",
+                    pair.as_rule()
+                )));
             }
         }
     }
-    panic!("WTF?");
+
+    Err(AcheronError::ParseError(
+        "Unexpected end of input.".to_string(),
+    ))
 }
