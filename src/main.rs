@@ -8,7 +8,9 @@ use pingora_load_balancing::{LoadBalancer, health_check};
 use proxy::service::{ProxyHostConfig, proxy_service};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, fs, time::Duration};
-use structures::{general::Args, proxy_structure::ProxyConfig};
+use structures::{
+    general::Args, load_balancer_structure::LoadBalancerConfig, proxy_structure::ProxyConfig,
+};
 /*use syntect::easy::HighlightLines;
 use syntect::parsing::SyntaxSet;
 use syntect::highlighting::{Style, ThemeSet};
