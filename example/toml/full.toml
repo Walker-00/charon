@@ -12,6 +12,14 @@ proxy_headers = [[
 ]]
 proxy_uds = true
 
+[proxy.servers."example.com".routes."/api/v1"]
+proxy_addr = "/tmp/example.sock"
+proxy_tls = false
+proxy_uds = true
+
+[proxy.servers."example.com".routes."/status"]
+proxy_tls = false
+
 [proxy.servers."another.com"]
 proxy_addr = "127.0.0.1:8001"
 proxy_tls = true
@@ -19,6 +27,12 @@ proxy_headers = [[
     "X-Another-Header",
     "another-value",
 ]]
+
+[proxy.servers."another.com".routes."/login"]
+proxy_tls = true
+
+[proxy.servers."another.com".routes."/home"]
+proxy_tls = true
 
 [[proxy]]
 listener = "0.0.0.0:9090"
@@ -33,6 +47,12 @@ proxy_headers = [[
     "new-proxy-value",
 ]]
 
+[proxy.servers."newproxy.com".routes."/dashboard"]
+proxy_tls = false
+
+[proxy.servers."newproxy.com".routes."/settings"]
+proxy_tls = false
+
 [proxy.servers."proxyexample.com"]
 proxy_addr = "/tmp/proxy.sock"
 proxy_tls = true
@@ -41,6 +61,12 @@ proxy_headers = [[
     "proxy-value",
 ]]
 proxy_uds = true
+
+[proxy.servers."proxyexample.com".routes."/info"]
+proxy_tls = true
+
+[proxy.servers."proxyexample.com".routes."/data"]
+proxy_tls = true
 
 [[load_balancer]]
 listener = "0.0.0.0:7070"

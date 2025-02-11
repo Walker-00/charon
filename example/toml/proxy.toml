@@ -4,13 +4,19 @@ tls_certificate = "path/to/cert1"
 tls_certificate_key = "path/to/key1"
 
 [proxy.servers.server1]
-proxy_addr = "/tmp/proxy.sock"
+proxy_addr = "/tmp/proxy1.sock"
 proxy_tls = true
 proxy_headers = [[
     "Header1",
     "Value1",
 ]]
 proxy_uds = true
+
+[proxy.servers.server1.routes."/route1"]
+proxy_tls = true
+
+[proxy.servers.server1.routes."/route2"]
+proxy_tls = true
 
 [[proxy]]
 listener = "127.0.0.1:9090"
@@ -24,3 +30,9 @@ proxy_headers = [[
     "Header2",
     "Value2",
 ]]
+
+[proxy.servers.server2.routes."/home"]
+proxy_tls = false
+
+[proxy.servers.server2.routes."/status"]
+proxy_tls = false

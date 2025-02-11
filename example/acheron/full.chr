@@ -1,60 +1,111 @@
+prometheus_addr = "0.0.0.0:9090"
 
-prometheus_addr = "127.0.0.1:9090"
-
-[proxy]
+[[proxy]]
 listener = "0.0.0.0:8080"
+
+[[host="example.com"]]
+proxy_addr = "/tmp/example.sock"
+proxy_tls = false
+proxy_headers = [
+    ["X-Example-Header", "value"]
+]
+proxy_uds = true
+
+[[[route="/api/v1"]]]
+proxy_addr = "/tmp/example.sock"
+proxy_tls = false
+proxy_uds = true
+
+[[[route="/status"]]]
+proxy_tls = false
+
+[[host="another.com"]]
+proxy_addr = "127.0.0.1:8001"
+proxy_tls = true
+proxy_headers = [
+    ["X-Another-Header", "another-value"]
+]
+
+[[[route="/login"]]]
+proxy_tls = true
+
+[[[route="/home"]]]
+proxy_tls = true
+
+[[proxy]]
+listener = "0.0.0.0:9090"
 tls_certificate = "cert.pem"
 tls_certificate_key = "key.pem"
 
-[[domain="example.com"]]
-proxy_addr = "192.168.1.1"
-proxy_tls = true
+[[host="newproxy.com"]]
+proxy_addr = "127.0.0.1:9001"
+proxy_tls = false
 proxy_headers = [
-    ["Authorization", "Bearer token"]
+    ["X-New-Proxy-Header", "new-proxy-value"]
 ]
 
-[[[route="/api"]]]
-proxy_addr = "192.168.1.2"
+[[[route="/dashboard"]]]
 proxy_tls = false
-proxy_uds = true
 
-[[domain="example.net"]]
-proxy_addr = "127.0.0.1:9799"
+[[[route="/settings"]]]
+proxy_tls = false
 
-[proxy]
-listener = "0.0.0.0:443"
-
-[[domain="example.com"]]
-proxy_addr = "192.168.1.1"
+[[host="proxyexample.com"]]
+proxy_addr = "/tmp/proxy.sock"
 proxy_tls = true
 proxy_headers = [
-    ["Authorization", "Bearer token"]
+    ["X-Proxy-Header", "proxy-value"]
 ]
-
-[[[route="/bpi"]]]
-proxy_addr = "192.168.1.2"
-proxy_tls = false
 proxy_uds = true
 
-[[domain="example.net"]]
-proxy_addr = "192.168.1.3"
+[[[route="/info"]]]
+proxy_tls = true
 
-[load_balancer]
-listener = "0.0.0.0:9091"
+[[[route="/data"]]]
+proxy_tls = true
+
+[[load_balancer]]
+listener = "0.0.0.0:7070"
 upstreams = [
-    "192.168.1.4:8000",
-    "192.168.1.5:8000"
+    "127.0.0.1:7000",
+    "127.0.0.1:7001"
 ]
-tls_certificate = "lb_cert.pem"
-tls_certificate_key = "lb_key.pem"
 health_check = true
 health_check_frequency = 30
 parallel_health_check = true
 
-[[domain="load-balancer.com"]]
+[[host="example.com"]]
+load_balancer_tls = false
+load_balancer_headers = [
+    ["X-LB-Example", "value"]
+]
+
+[[host="another.com"]]
 load_balancer_tls = true
 load_balancer_headers = [
-    ["X-Custom-Header", "CustomValue"],
-    ["Accept", "*/*"]
+    ["X-LB-Another", "another-value"]
+]
+
+[[load_balancer]]
+listener = "0.0.0.0:8080"
+upstreams = [
+    "127.0.0.1:8081",
+    "127.0.0.1:8082"
+]
+health_check = false
+parallel_health_check = false
+tls_certificate = "loadbalancer_cert.pem"
+tls_certificate_key = "loadbalancer_key.pem"
+
+[[host="proxyexample.com"]]
+load_balancer_tls = true
+load_balancer_headers = [
+    ["X-Proxy-LB-Header", "proxy-lb-value"]
+]
+
+[[host="newproxy.com"]]
+load_balancer_tls = false
+load_balancer_headers = [
+    ["X-New-Proxy-LB-Header", "new-proxy-lb-value"]
 ]
 
