@@ -6,7 +6,7 @@ use pingora::{Result, prelude::HttpPeer};
 use pingora_load_balancing::{LoadBalancer, prelude::RoundRobin};
 use pingora_proxy::{ProxyHttp, Session};
 
-use super::service::LBHostConfig;
+use crate::structures::load_balancer_structure::LBHostConfig;
 
 pub struct AppLB {
     pub host_configs: Arc<HashMap<String, LBHostConfig>>,
