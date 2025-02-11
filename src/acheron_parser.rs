@@ -1,8 +1,10 @@
 use std::collections::HashMap;
 
+use pest::Parser;
 use pest_derive::Parser;
 
 use crate::structures::{
+    general::Config,
     load_balancer_structure::{LBHostConfig, LoadBalancerConfig},
     proxy_structure::{ProxyConfig, ProxyHostConfig, ProxyPathBaseHostConfig},
 };
@@ -250,4 +252,54 @@ fn parse_headers(pair: pest::iterators::Pair<Rule>) -> Vec<(String, String)> {
             (key[0].to_string(), key[1].to_string())
         })
         .collect()
+}
+
+fn acheron(config: &str) -> Config {
+    let input = std::fs::read_to_string(config).unwrap();
+    let parsed = ConfigParser::parse(Rule::file, &input)
+        .expect("Failed to parse input")
+        .next()
+        .unwrap();
+    let mut config = Config::new();
+
+    for pair in parsed.into_inner() {
+        match pair.as_rule() {
+            Rule::prometheus_addr => {
+                config.prometheus_addr = Some(
+                    pair.into_inner()
+                        .next()
+                        .unwrap()
+                        .as_str()
+                        .trim()
+                        .trim_matches('"')
+                        .to_string(),
+                );
+            }
+            Rule::main_proxy_config => {
+                let proxy_config = parse_proxy_config(pair);
+
+                if let Some(ref mut proxy_configs) = config.proxy {
+                    proxy_configs.push(proxy_config);
+                } else {
+                    config.proxy = Some(vec![proxy_config]);
+                }
+            }
+            Rule::main_lb_config => {
+                let load_balancer_config = parse_load_balancer_config(pair);
+
+                if let Some(ref mut lb_configs) = config.load_balancer {
+                    lb_configs.push(load_balancer_config);
+                } else {
+                    config.load_balancer = Some(vec![load_balancer_config])
+                }
+            }
+            Rule::EOI => {
+                return config;
+            }
+            _ => {
+                panic!("No Match {pair}");
+            }
+        }
+    }
+    panic!("WTF?");
 }
