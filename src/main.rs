@@ -8,6 +8,7 @@ use pingora_load_balancing::{LoadBalancer, health_check};
 use proxy::service::{ProxyHostConfig, proxy_service};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, fs, time::Duration};
+use structures::{general::Args, proxy_structure::ProxyConfig};
 /*use syntect::easy::HighlightLines;
 use syntect::parsing::SyntaxSet;
 use syntect::highlighting::{Style, ThemeSet};
@@ -18,38 +19,6 @@ mod example_config;
 mod load_balancer;
 mod proxy;
 mod structures;
-
-#[derive(clap::Parser, Debug)]
-#[command(
-    version,
-    about = "Charon: The Proxy Server",
-    long_about = "Charon is a proxy server, built on Pingora, that ferries packets across the digital river—transferring data from the chaotic internet to servers, much like the mythical Charon guided souls to the underworld."
-)]
-struct Args {
-    /// Configuration file path
-    #[arg(short, long)]
-    config: Option<String>,
-
-    /// Get Example Full Config
-    #[arg(short = 'e', long)]
-    example: bool,
-
-    /// Get Example Proxy Config
-    #[arg(short = 'p', long)]
-    example_proxy: bool,
-
-    /// Get Example Load Balancer Config
-    #[arg(short = 'l', long)]
-    example_load_balancer: bool,
-}
-
-#[derive(Serialize, Deserialize)]
-struct ProxyConfig {
-    listener: String,
-    tls_certificate: Option<String>,
-    tls_certificate_key: Option<String>,
-    servers: HashMap<String, ProxyHostConfig>,
-}
 
 #[derive(Serialize, Deserialize)]
 struct LoadBalancerConfig {
