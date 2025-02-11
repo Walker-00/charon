@@ -23,6 +23,7 @@ impl Config {
                                 "X-Example-Header".to_string(),
                                 "value".to_string(),
                             )]),
+                            routes: None,
                         }),
                         ("another.com".to_string(), ProxyHostConfig {
                             proxy_addr: "127.0.0.1:8001".to_string(),
@@ -32,6 +33,7 @@ impl Config {
                                 "X-Another-Header".to_string(),
                                 "another-value".to_string(),
                             )]),
+                            routes: None,
                         }),
                     ]),
                 },
@@ -48,6 +50,7 @@ impl Config {
                                 "X-Proxy-Header".to_string(),
                                 "proxy-value".to_string(),
                             )]),
+                            routes: None,
                         }),
                         ("newproxy.com".to_string(), ProxyHostConfig {
                             proxy_addr: "127.0.0.1:9001".to_string(),
@@ -57,6 +60,7 @@ impl Config {
                                 "X-New-Proxy-Header".to_string(),
                                 "new-proxy-value".to_string(),
                             )]),
+                            routes: None,
                         }),
                     ]),
                 },
@@ -115,13 +119,15 @@ impl Config {
             ]),
         }
     }
-    pub fn new_proxy_example() -> Self {
-        let mut proxy_servers = HashMap::new();
-        proxy_servers.insert("server1".to_string(), ProxyHostConfig {
-            proxy_addr: "/tmp/proxy.sock".to_string(),
+
+    pub fn new_proxy_only() -> Self {
+        let mut proxy_servers1 = HashMap::new();
+        proxy_servers1.insert("server1".to_string(), ProxyHostConfig {
+            proxy_addr: "/tmp/proxy1.sock".to_string(),
             proxy_tls: true,
             proxy_uds: Some(true),
             proxy_headers: Some(vec![("Header1".to_string(), "Value1".to_string())]),
+            routes: None,
         });
 
         let mut proxy_servers2 = HashMap::new();
@@ -130,6 +136,7 @@ impl Config {
             proxy_tls: false,
             proxy_uds: None,
             proxy_headers: Some(vec![("Header2".to_string(), "Value2".to_string())]),
+            routes: None,
         });
 
         Self {
@@ -139,7 +146,7 @@ impl Config {
                     listener: "127.0.0.1:8080".to_string(),
                     tls_certificate: Some("path/to/cert1".to_string()),
                     tls_certificate_key: Some("path/to/key1".to_string()),
-                    servers: proxy_servers,
+                    servers: proxy_servers1,
                 },
                 ProxyConfig {
                     listener: "127.0.0.1:9090".to_string(),
@@ -151,9 +158,10 @@ impl Config {
             load_balancer: None,
         }
     }
-    pub fn new_load_balancer_example() -> Self {
-        let mut lb_servers = HashMap::new();
-        lb_servers.insert("lb1".to_string(), LBHostConfig {
+
+    pub fn new_load_balancer_only() -> Self {
+        let mut lb_servers1 = HashMap::new();
+        lb_servers1.insert("lb1".to_string(), LBHostConfig {
             load_balancer_tls: true,
             load_balancer_headers: Some(vec![("Header1".to_string(), "Value1".to_string())]),
         });
@@ -176,7 +184,7 @@ impl Config {
                     parallel_health_check: Some(true),
                     tls_certificate: Some("path/to/lb_cert1".to_string()),
                     tls_certificate_key: Some("path/to/lb_key1".to_string()),
-                    servers: lb_servers,
+                    servers: lb_servers1,
                 },
                 LoadBalancerConfig {
                     listener: "127.0.0.1:9091".to_string(),

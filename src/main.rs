@@ -57,11 +57,11 @@ fn main() {
         highlight_toml(&example);
         std::process::exit(0);
     } else if arg.example_proxy {
-        let example = toml::to_string_pretty(&Config::new_proxy_example()).unwrap();
+        let example = toml::to_string_pretty(&Config::new_proxy_only()).unwrap();
         highlight_toml(&example);
         std::process::exit(0);
     } else if arg.example_load_balancer {
-        let example = toml::to_string_pretty(&Config::new_load_balancer_example()).unwrap();
+        let example = toml::to_string_pretty(&Config::new_load_balancer_only()).unwrap();
         highlight_toml(&example);
         std::process::exit(0);
     }
