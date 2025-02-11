@@ -45,6 +45,8 @@ The configuration file uses TOML format and supports specifying proxy and load b
 
 ### Example Configuration
 
+Both [TOML](https://toml.io) and my own config language [ACHERON](https://github.com/Walker-00/acheron) is supported.
+
 Check the [example](https://github.com/Walker-00/charon/tree/rust/example) folder for more config.
 
 ```toml
