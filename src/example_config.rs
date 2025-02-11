@@ -29,13 +29,13 @@ impl Config {
                             routes: Some(HashMap::from([
                                 ("/api/v1".to_string(), ProxyPathBaseHostConfig {
                                     proxy_addr: Some("/tmp/example.sock".to_string()),
-                                    proxy_tls: false,
+                                    proxy_tls: Some(false),
                                     proxy_uds: Some(true),
                                     proxy_headers: None,
                                 }),
                                 ("/status".to_string(), ProxyPathBaseHostConfig {
                                     proxy_addr: None,
-                                    proxy_tls: false,
+                                    proxy_tls: Some(false),
                                     proxy_uds: None,
                                     proxy_headers: None,
                                 }),
@@ -52,13 +52,13 @@ impl Config {
                             routes: Some(HashMap::from([
                                 ("/home".to_string(), ProxyPathBaseHostConfig {
                                     proxy_addr: None,
-                                    proxy_tls: true,
+                                    proxy_tls: Some(true),
                                     proxy_uds: None,
                                     proxy_headers: None,
                                 }),
                                 ("/login".to_string(), ProxyPathBaseHostConfig {
                                     proxy_addr: None,
-                                    proxy_tls: true,
+                                    proxy_tls: Some(true),
                                     proxy_uds: None,
                                     proxy_headers: None,
                                 }),
@@ -82,13 +82,13 @@ impl Config {
                             routes: Some(HashMap::from([
                                 ("/data".to_string(), ProxyPathBaseHostConfig {
                                     proxy_addr: None,
-                                    proxy_tls: true,
+                                    proxy_tls: Some(true),
                                     proxy_uds: None,
                                     proxy_headers: None,
                                 }),
                                 ("/info".to_string(), ProxyPathBaseHostConfig {
                                     proxy_addr: None,
-                                    proxy_tls: true,
+                                    proxy_tls: Some(true),
                                     proxy_uds: None,
                                     proxy_headers: None,
                                 }),
@@ -105,13 +105,13 @@ impl Config {
                             routes: Some(HashMap::from([
                                 ("/dashboard".to_string(), ProxyPathBaseHostConfig {
                                     proxy_addr: None,
-                                    proxy_tls: false,
+                                    proxy_tls: Some(false),
                                     proxy_uds: None,
                                     proxy_headers: None,
                                 }),
                                 ("/settings".to_string(), ProxyPathBaseHostConfig {
                                     proxy_addr: None,
-                                    proxy_tls: false,
+                                    proxy_tls: Some(false),
                                     proxy_uds: None,
                                     proxy_headers: None,
                                 }),
@@ -185,13 +185,13 @@ impl Config {
             routes: Some(HashMap::from([
                 ("/route1".to_string(), ProxyPathBaseHostConfig {
                     proxy_addr: None,
-                    proxy_tls: true,
+                    proxy_tls: Some(true),
                     proxy_uds: None,
                     proxy_headers: None,
                 }),
                 ("/route2".to_string(), ProxyPathBaseHostConfig {
                     proxy_addr: None,
-                    proxy_tls: true,
+                    proxy_tls: Some(true),
                     proxy_uds: None,
                     proxy_headers: None,
                 }),
@@ -207,13 +207,13 @@ impl Config {
             routes: Some(HashMap::from([
                 ("/home".to_string(), ProxyPathBaseHostConfig {
                     proxy_addr: None,
-                    proxy_tls: false,
+                    proxy_tls: Some(false),
                     proxy_uds: None,
                     proxy_headers: None,
                 }),
                 ("/status".to_string(), ProxyPathBaseHostConfig {
                     proxy_addr: None,
-                    proxy_tls: false,
+                    proxy_tls: Some(false),
                     proxy_uds: None,
                     proxy_headers: None,
                 }),
