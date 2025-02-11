@@ -49,6 +49,124 @@ Both [TOML](https://toml.io) and my own config language [ACHERON](https://github
 
 Check the [example](https://github.com/Walker-00/charon/tree/rust/example) folder for more config.
 
+ACHERON example:
+
+```toml
+prometheus_addr = "0.0.0.0:9090"
+
+[[proxy]]
+listener = "0.0.0.0:8080"
+
+[[host="example.com"]]
+proxy_addr = "/tmp/example.sock"
+proxy_tls = false
+proxy_headers = [
+    ["X-Example-Header", "value"]
+]
+proxy_uds = true
+
+[[[route="/api/v1"]]]
+proxy_addr = "/tmp/example.sock"
+proxy_tls = false
+proxy_uds = true
+
+[[[route="/status"]]]
+proxy_tls = false
+
+[[host="another.com"]]
+proxy_addr = "127.0.0.1:8001"
+proxy_tls = true
+proxy_headers = [
+    ["X-Another-Header", "another-value"]
+]
+
+[[[route="/login"]]]
+proxy_tls = true
+
+[[[route="/home"]]]
+proxy_tls = true
+
+[[proxy]]
+listener = "0.0.0.0:9090"
+tls_certificate = "cert.pem"
+tls_certificate_key = "key.pem"
+
+[[host="newproxy.com"]]
+proxy_addr = "127.0.0.1:9001"
+proxy_tls = false
+proxy_headers = [
+    ["X-New-Proxy-Header", "new-proxy-value"]
+]
+
+[[[route="/dashboard"]]]
+proxy_tls = false
+
+[[[route="/settings"]]]
+proxy_tls = false
+
+[[host="proxyexample.com"]]
+proxy_addr = "/tmp/proxy.sock"
+proxy_tls = true
+proxy_headers = [
+    ["X-Proxy-Header", "proxy-value"]
+]
+proxy_uds = true
+
+[[[route="/info"]]]
+proxy_tls = true
+
+[[[route="/data"]]]
+proxy_tls = true
+
+[[load_balancer]]
+listener = "0.0.0.0:7070"
+upstreams = [
+    "127.0.0.1:7000",
+    "127.0.0.1:7001"
+]
+health_check = true
+health_check_frequency = 30
+parallel_health_check = true
+
+[[host="example.com"]]
+load_balancer_tls = false
+load_balancer_headers = [
+    ["X-LB-Example", "value"]
+]
+
+[[host="another.com"]]
+load_balancer_tls = true
+load_balancer_headers = [
+    ["X-LB-Another", "another-value"]
+]
+
+[[load_balancer]]
+listener = "0.0.0.0:8080"
+upstreams = [
+    "127.0.0.1:8081",
+    "127.0.0.1:8082"
+]
+health_check = false
+parallel_health_check = false
+tls_certificate = "loadbalancer_cert.pem"
+tls_certificate_key = "loadbalancer_key.pem"
+
+[[host="proxyexample.com"]]
+load_balancer_tls = true
+load_balancer_headers = [
+    ["X-Proxy-LB-Header", "proxy-lb-value"]
+]
+
+[[host="newproxy.com"]]
+load_balancer_tls = false
+load_balancer_headers = [
+    ["X-New-Proxy-LB-Header", "new-proxy-lb-value"]
+]
+```
+
+
+TOML example:
+
 ```toml
 prometheus_addr = "0.0.0.0:9090"
 
@@ -64,6 +182,14 @@ proxy_headers = [[
 ]]
 proxy_uds = true
 
+[proxy.servers."example.com".routes."/api/v1"]
+proxy_addr = "/tmp/example.sock"
+proxy_tls = false
+proxy_uds = true
+
+[proxy.servers."example.com".routes."/status"]
+proxy_tls = false
+
 [proxy.servers."another.com"]
 proxy_addr = "127.0.0.1:8001"
 proxy_tls = true
@@ -71,6 +197,12 @@ proxy_headers = [[
     "X-Another-Header",
     "another-value",
 ]]
+
+[proxy.servers."another.com".routes."/login"]
+proxy_tls = true
+
+[proxy.servers."another.com".routes."/home"]
+proxy_tls = true
 
 [[proxy]]
 listener = "0.0.0.0:9090"
@@ -85,6 +217,12 @@ proxy_headers = [[
     "new-proxy-value",
 ]]
 
+[proxy.servers."newproxy.com".routes."/dashboard"]
+proxy_tls = false
+
+[proxy.servers."newproxy.com".routes."/settings"]
+proxy_tls = false
+
 [proxy.servers."proxyexample.com"]
 proxy_addr = "/tmp/proxy.sock"
 proxy_tls = true
@@ -93,6 +231,12 @@ proxy_headers = [[
     "proxy-value",
 ]]
 proxy_uds = true
+
+[proxy.servers."proxyexample.com".routes."/info"]
+proxy_tls = true
+
+[proxy.servers."proxyexample.com".routes."/data"]
+proxy_tls = true
 
 [[load_balancer]]
 listener = "0.0.0.0:7070"
@@ -148,9 +292,9 @@ load_balancer_headers = [[
 ### Command Line Arguments
 
 - `--config <path>`: Path to the configuration file.
-- `--example`: Prints the example configuration file.
-- `--example_proxy`: Prints the example proxy configuration.
-- `--example_load_balancer`: Prints the example load balancer configuration.
+- `--example`: Prints the example configuration file (Only TOML for now).
+- `--example_proxy`: Prints the example proxy configuration (Only TOML for now).
+- `--example_load_balancer`: Prints the example load balancer configuration (Only TOML for now).
 
 ## Usage
 
