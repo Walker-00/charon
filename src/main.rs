@@ -18,6 +18,7 @@ use syntect::highlighting::{Style, ThemeSet};
 use syntect::util::{as_24_bit_terminal_escaped, LinesWithEndings};*/
 use tracing::{Level, error, info};
 
+mod acheron_parser;
 mod example_config;
 mod load_balancer;
 mod proxy;
