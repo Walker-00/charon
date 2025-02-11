@@ -22,7 +22,7 @@ pub struct ProxyHostConfig {
 #[derive(Serialize, Deserialize)]
 pub struct ProxyPathBaseHostConfig {
     pub proxy_addr: Option<String>,
-    pub proxy_tls: bool,
+    pub proxy_tls: Option<bool>,
     pub proxy_headers: Option<Vec<(String, String)>>,
     pub proxy_uds: Option<bool>,
 }
