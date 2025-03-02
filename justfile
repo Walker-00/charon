@@ -1,5 +1,8 @@
-alias d := debug_build
-alias r := release_build
+alias db := debug_build
+alias rb := release_build
+alias ob := cpu_optimized_build
+alias ni := normal_install
+alias oi := native_install
 
 # debug build
 debug_build:
