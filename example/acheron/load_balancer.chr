@@ -1,37 +1,12 @@
-prometheus_addr = "0.0.0.0:8080"
-
-[[load_balancer]]
-listener = "127.0.0.1:8081"
-upstreams = [
-    "upstream1",
-    "upstream2"
-]
+[load_balancer]
+listener = "0.0.0.0:9091"
+upstreams = ["192.168.1.4:8000", "192.168.1.5:8000"]
+tls_certificate = "lb_cert.pem"
+tls_certificate_key = "lb_key.pem"
 health_check = true
 health_check_frequency = 30
 parallel_health_check = true
-tls_certificate = "path/to/lb_cert1"
-tls_certificate_key = "path/to/lb_key1"
 
-[[host="lb1"]]
+[[domain=load-balancer.com]]
 load_balancer_tls = true
-load_balancer_headers = [
-    ["Header1", "Value1"]
-]
-
-[[load_balancer]]
-listener = "127.0.0.1:9091"
-upstreams = [
-    "upstream3",
-    "upstream4"
-]
-health_check = true
-health_check_frequency = 60
-parallel_health_check = false
-tls_certificate = "path/to/lb_cert2"
-tls_certificate_key = "path/to/lb_key2"
-
-[[host="lb2"]]
-load_balancer_tls = false
-load_balancer_headers = [
-    ["Header2", "Value2"]
-]
+load_balancer_headers = [["X-Custom-Header: CustomValue"], ["Accept: */*"]]
