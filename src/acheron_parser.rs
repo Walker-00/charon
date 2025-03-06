@@ -287,7 +287,6 @@ fn parse_headers(pair: pest::iterators::Pair<Rule>) -> Vec<(String, String)> {
 }
 
 pub fn acheron(input: &str) -> Result<Config, AcheronError> {
-    println!("{input}");
     let parsed = ConfigParser::parse(Rule::file, input)
         .map_err(|e| AcheronError::ParseError(format!("Failed to parse input: {}", e)))?
         .next()
@@ -295,7 +294,7 @@ pub fn acheron(input: &str) -> Result<Config, AcheronError> {
             AcheronError::ParseError("No root pair found in the parsed input.".to_string())
         })?;
 
-    let mut config = Config::new();
+    let mut config = Config::default();
 
     for pair in parsed.into_inner() {
         match pair.as_rule() {

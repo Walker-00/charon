@@ -1,7 +1,7 @@
 [proxy]
 listener = "127.0.0.1:9692"
 
-[[domain="localhost"]]
+[[domain=localhost:9692]]
 proxy_addr = "127.0.0.1:9690"
 
 [[[route=/bruh]]]

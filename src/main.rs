@@ -75,9 +75,7 @@ fn main() {
     }
 
     let config_file = fs::read_to_string(arg.config.unwrap()).expect("Failed to open config file");
-    println!("{config_file}");
     let config = if let Ok(config) = acheron(&config_file) {
-        // println!("{config:#?}");
         config
     } else {
         match toml::from_str(&config_file) {
