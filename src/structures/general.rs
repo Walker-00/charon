@@ -26,7 +26,7 @@ pub struct Args {
     pub example_load_balancer: bool,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Config {
     pub prometheus_addr: Option<String>,
     pub proxy: Option<Vec<ProxyConfig>>,
