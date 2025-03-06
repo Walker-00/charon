@@ -30,11 +30,14 @@ impl ProxyHttp for AppProxy {
             let mut proxy_tls = host_config.proxy_tls;
             if let Some(routes) = &host_config.routes {
                 if let Some(route_host_config) = routes.get(request_path) {
+                    println!("{route_host_config:?}");
+                    println!("bruh");
                     if let Some(uds) = route_host_config.proxy_uds {
                         proxy_uds = Some(uds);
                     }
 
                     if let Some(addr) = &route_host_config.proxy_addr {
+                        println!("{addr}");
                         proxy_addr = &addr;
                     }
 
@@ -48,11 +51,7 @@ impl ProxyHttp for AppProxy {
                     HttpPeer::new_uds(&proxy_addr, proxy_tls, host_header.to_string()).unwrap(),
                 ));
             }
-            let proxy_to = HttpPeer::new(
-                &host_config.proxy_addr,
-                host_config.proxy_tls,
-                host_header.to_string(),
-            );
+            let proxy_to = HttpPeer::new(&proxy_addr, proxy_tls, host_header.to_string());
             Ok(Box::new(proxy_to))
         } else {
             Err(pingora::Error::new(pingora_core::Custom("Host not found")))
