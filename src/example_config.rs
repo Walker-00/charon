@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use radix_trie::Trie;
 
 use crate::{
     Config, LoadBalancerConfig, ProxyConfig,
@@ -17,53 +17,71 @@ impl Config {
                     listener: "0.0.0.0:8080".to_string(),
                     tls_certificate: None,
                     tls_certificate_key: None,
-                    servers: HashMap::from([
-                        ("example.com".to_string(), ProxyHostConfig {
-                            proxy_addr: "/tmp/example.sock".to_string(),
-                            proxy_tls: false,
-                            proxy_uds: Some(true),
-                            proxy_headers: Some(vec![(
-                                "X-Example-Header".to_string(),
-                                "value".to_string(),
-                            )]),
-                            routes: Some(HashMap::from([
-                                ("/api/v1".to_string(), ProxyPathBaseHostConfig {
-                                    proxy_addr: Some("/tmp/example.sock".to_string()),
-                                    proxy_tls: Some(false),
-                                    proxy_uds: Some(true),
-                                    proxy_headers: None,
-                                }),
-                                ("/status".to_string(), ProxyPathBaseHostConfig {
-                                    proxy_addr: None,
-                                    proxy_tls: Some(false),
-                                    proxy_uds: None,
-                                    proxy_headers: None,
-                                }),
-                            ])),
-                        }),
-                        ("another.com".to_string(), ProxyHostConfig {
-                            proxy_addr: "127.0.0.1:8001".to_string(),
-                            proxy_tls: true,
-                            proxy_uds: None,
-                            proxy_headers: Some(vec![(
-                                "X-Another-Header".to_string(),
-                                "another-value".to_string(),
-                            )]),
-                            routes: Some(HashMap::from([
-                                ("/home".to_string(), ProxyPathBaseHostConfig {
-                                    proxy_addr: None,
-                                    proxy_tls: Some(true),
-                                    proxy_uds: None,
-                                    proxy_headers: None,
-                                }),
-                                ("/login".to_string(), ProxyPathBaseHostConfig {
-                                    proxy_addr: None,
-                                    proxy_tls: Some(true),
-                                    proxy_uds: None,
-                                    proxy_headers: None,
-                                }),
-                            ])),
-                        }),
+                    servers: Trie::from([
+                        (
+                            "example.com".to_string(),
+                            ProxyHostConfig {
+                                proxy_addr: "/tmp/example.sock".to_string(),
+                                proxy_tls: false,
+                                proxy_uds: Some(true),
+                                proxy_headers: Some(vec![(
+                                    "X-Example-Header".to_string(),
+                                    "value".to_string(),
+                                )]),
+                                routes: Some(HashMap::from([
+                                    (
+                                        "/api/v1".to_string(),
+                                        ProxyPathBaseHostConfig {
+                                            proxy_addr: Some("/tmp/example.sock".to_string()),
+                                            proxy_tls: Some(false),
+                                            proxy_uds: Some(true),
+                                            proxy_headers: None,
+                                        },
+                                    ),
+                                    (
+                                        "/status".to_string(),
+                                        ProxyPathBaseHostConfig {
+                                            proxy_addr: None,
+                                            proxy_tls: Some(false),
+                                            proxy_uds: None,
+                                            proxy_headers: None,
+                                        },
+                                    ),
+                                ])),
+                            },
+                        ),
+                        (
+                            "another.com".to_string(),
+                            ProxyHostConfig {
+                                proxy_addr: "127.0.0.1:8001".to_string(),
+                                proxy_tls: true,
+                                proxy_uds: None,
+                                proxy_headers: Some(vec![(
+                                    "X-Another-Header".to_string(),
+                                    "another-value".to_string(),
+                                )]),
+                                routes: Some(HashMap::from([
+                                    (
+                                        "/home".to_string(),
+                                        ProxyPathBaseHostConfig {
+                                            proxy_addr: None,
+                                            proxy_tls: Some(true),
+                                            proxy_uds: None,
+                                            proxy_headers: None,
+                                        },
+                                    ),
+                                    (
+                                        "/login".to_string(),
+                                        ProxyPathBaseHostConfig {
+                                            proxy_addr: None,
+                                            proxy_tls: Some(true),
+                                            proxy_uds: None,
+                                            proxy_headers: None,
+                                        },
+                                    ),
+                                ])),
+                            },
+                        ),
                     ]),
                 },
                 ProxyConfig {
@@ -71,52 +89,70 @@ impl Config {
                     tls_certificate: Some("cert.pem".to_string()),
                     tls_certificate_key: Some("key.pem".to_string()),
                     servers: HashMap::from([
-                        ("proxyexample.com".to_string(), ProxyHostConfig {
-                            proxy_addr: "/tmp/proxy.sock".to_string(),
-                            proxy_tls: true,
-                            proxy_uds: Some(true),
-                            proxy_headers: Some(vec![(
-                                "X-Proxy-Header".to_string(),
-                                "proxy-value".to_string(),
-                            )]),
-                            routes: Some(HashMap::from([
-                                ("/data".to_string(), ProxyPathBaseHostConfig {
-                                    proxy_addr: None,
-                                    proxy_tls: Some(true),
-                                    proxy_uds: None,
-                                    proxy_headers: None,
-                                }),
-                                ("/info".to_string(), ProxyPathBaseHostConfig {
-                                    proxy_addr: None,
-                                    proxy_tls: Some(true),
-                                    proxy_uds: None,
-                                    proxy_headers: None,
-                                }),
-                            ])),
-                        }),
-                        ("newproxy.com".to_string(), ProxyHostConfig {
-                            proxy_addr: "127.0.0.1:9001".to_string(),
-                            proxy_tls: false,
-                            proxy_uds: None,
-                            proxy_headers: Some(vec![(
-                                "X-New-Proxy-Header".to_string(),
-                                "new-proxy-value".to_string(),
-                            )]),
-                            routes: Some(HashMap::from([
-                                ("/dashboard".to_string(), ProxyPathBaseHostConfig {
-                                    proxy_addr: None,
-                                    proxy_tls: Some(false),
-                                    proxy_uds: None,
-                                    proxy_headers: None,
-                                }),
-                                ("/settings".to_string(), ProxyPathBaseHostConfig {
-                                    proxy_addr: None,
-                                    proxy_tls: Some(false),
-                                    proxy_uds: None,
-                                    proxy_headers: None,
-                                }),
-                            ])),
-                        }),
+                        (
+                            "proxyexample.com".to_string(),
+                            ProxyHostConfig {
+                                proxy_addr: "/tmp/proxy.sock".to_string(),
+                                proxy_tls: true,
+                                proxy_uds: Some(true),
+                                proxy_headers: Some(vec![(
+                                    "X-Proxy-Header".to_string(),
+                                    "proxy-value".to_string(),
+                                )]),
+                                routes: Some(HashMap::from([
+                                    (
+                                        "/data".to_string(),
+                                        ProxyPathBaseHostConfig {
+                                            proxy_addr: None,
+                                            proxy_tls: Some(true),
+                                            proxy_uds: None,
+                                            proxy_headers: None,
+                                        },
+                                    ),
+                                    (
+                                        "/info".to_string(),
+                                        ProxyPathBaseHostConfig {
+                                            proxy_addr: None,
+                                            proxy_tls: Some(true),
+                                            proxy_uds: None,
+                                            proxy_headers: None,
+                                        },
+                                    ),
+                                ])),
+                            },
+                        ),
+                        (
+                            "newproxy.com".to_string(),
+                            ProxyHostConfig {
+                                proxy_addr: "127.0.0.1:9001".to_string(),
+                                proxy_tls: false,
+                                proxy_uds: None,
+                                proxy_headers: Some(vec![(
+                                    "X-New-Proxy-Header".to_string(),
+                                    "new-proxy-value".to_string(),
+                                )]),
+                                routes: Some(HashMap::from([
+                                    (
+                                        "/dashboard".to_string(),
+                                        ProxyPathBaseHostConfig {
+                                            proxy_addr: None,
+                                            proxy_tls: Some(false),
+                                            proxy_uds: None,
+                                            proxy_headers: None,
+                                        },
+                                    ),
+                                    (
+                                        "/settings".to_string(),
+                                        ProxyPathBaseHostConfig {
+                                            proxy_addr: None,
+                                            proxy_tls: Some(false),
+                                            proxy_uds: None,
+                                            proxy_headers: None,
+                                        },
+                                    ),
+                                ])),
+                            },
+                        ),
                     ]),
                 },
             ]),
@@ -130,20 +166,26 @@ impl Config {
                     tls_certificate: None,
                     tls_certificate_key: None,
                     servers: HashMap::from([
-                        ("example.com".to_string(), LBHostConfig {
-                            load_balancer_tls: false,
-                            load_balancer_headers: Some(vec![(
-                                "X-LB-Example".to_string(),
-                                "value".to_string(),
-                            )]),
-                        }),
-                        ("another.com".to_string(), LBHostConfig {
-                            load_balancer_tls: true,
-                            load_balancer_headers: Some(vec![(
-                                "X-LB-Another".to_string(),
-                                "another-value".to_string(),
-                            )]),
-                        }),
+                        (
+                            "example.com".to_string(),
+                            LBHostConfig {
+                                load_balancer_tls: false,
+                                load_balancer_headers: Some(vec![(
+                                    "X-LB-Example".to_string(),
+                                    "value".to_string(),
+                                )]),
+                            },
+                        ),
+                        (
+                            "another.com".to_string(),
+                            LBHostConfig {
+                                load_balancer_tls: true,
+                                load_balancer_headers: Some(vec![(
+                                    "X-LB-Another".to_string(),
+                                    "another-value".to_string(),
+                                )]),
+                            },
+                        ),
                     ]),
                 },
                 LoadBalancerConfig {
@@ -155,20 +197,26 @@ impl Config {
                     tls_certificate: Some("loadbalancer_cert.pem".to_string()),
                     tls_certificate_key: Some("loadbalancer_key.pem".to_string()),
                     servers: HashMap::from([
-                        ("proxyexample.com".to_string(), LBHostConfig {
-                            load_balancer_tls: true,
-                            load_balancer_headers: Some(vec![(
-                                "X-Proxy-LB-Header".to_string(),
-                                "proxy-lb-value".to_string(),
-                            )]),
-                        }),
-                        ("newproxy.com".to_string(), LBHostConfig {
-                            load_balancer_tls: false,
-                            load_balancer_headers: Some(vec![(
-                                "X-New-Proxy-LB-Header".to_string(),
-                                "new-proxy-lb-value".to_string(),
-                            )]),
-                        }),
+                        (
+                            "proxyexample.com".to_string(),
+                            LBHostConfig {
+                                load_balancer_tls: true,
+                                load_balancer_headers: Some(vec![(
+                                    "X-Proxy-LB-Header".to_string(),
+                                    "proxy-lb-value".to_string(),
+                                )]),
+                            },
+                        ),
+                        (
+                            "newproxy.com".to_string(),
+                            LBHostConfig {
+                                load_balancer_tls: false,
+                                load_balancer_headers: Some(vec![(
+                                    "X-New-Proxy-LB-Header".to_string(),
+                                    "new-proxy-lb-value".to_string(),
+                                )]),
+                            },
+                        ),
                     ]),
                 },
             ]),
@@ -177,48 +225,66 @@ impl Config {
 
     pub fn new_proxy_only() -> Self {
         let mut proxy_servers1 = HashMap::new();
-        proxy_servers1.insert("server1".to_string(), ProxyHostConfig {
-            proxy_addr: "/tmp/proxy1.sock".to_string(),
-            proxy_tls: true,
-            proxy_uds: Some(true),
-            proxy_headers: Some(vec![("Header1".to_string(), "Value1".to_string())]),
-            routes: Some(HashMap::from([
-                ("/route1".to_string(), ProxyPathBaseHostConfig {
-                    proxy_addr: None,
-                    proxy_tls: Some(true),
-                    proxy_uds: None,
-                    proxy_headers: None,
-                }),
-                ("/route2".to_string(), ProxyPathBaseHostConfig {
-                    proxy_addr: None,
-                    proxy_tls: Some(true),
-                    proxy_uds: None,
-                    proxy_headers: None,
-                }),
-            ])),
-        });
+        proxy_servers1.insert(
+            "server1".to_string(),
+            ProxyHostConfig {
+                proxy_addr: "/tmp/proxy1.sock".to_string(),
+                proxy_tls: true,
+                proxy_uds: Some(true),
+                proxy_headers: Some(vec![("Header1".to_string(), "Value1".to_string())]),
+                routes: Some(HashMap::from([
+                    (
+                        "/route1".to_string(),
+                        ProxyPathBaseHostConfig {
+                            proxy_addr: None,
+                            proxy_tls: Some(true),
+                            proxy_uds: None,
+                            proxy_headers: None,
+                        },
+                    ),
+                    (
+                        "/route2".to_string(),
+                        ProxyPathBaseHostConfig {
+                            proxy_addr: None,
+                            proxy_tls: Some(true),
+                            proxy_uds: None,
+                            proxy_headers: None,
+                        },
+                    ),
+                ])),
+            },
+        );
 
         let mut proxy_servers2 = HashMap::new();
-        proxy_servers2.insert("server2".to_string(), ProxyHostConfig {
-            proxy_addr: "192.168.1.2".to_string(),
-            proxy_tls: false,
-            proxy_uds: None,
-            proxy_headers: Some(vec![("Header2".to_string(), "Value2".to_string())]),
-            routes: Some(HashMap::from([
-                ("/home".to_string(), ProxyPathBaseHostConfig {
-                    proxy_addr: None,
-                    proxy_tls: Some(false),
-                    proxy_uds: None,
-                    proxy_headers: None,
-                }),
-                ("/status".to_string(), ProxyPathBaseHostConfig {
-                    proxy_addr: None,
-                    proxy_tls: Some(false),
-                    proxy_uds: None,
-                    proxy_headers: None,
-                }),
-            ])),
-        });
+        proxy_servers2.insert(
+            "server2".to_string(),
+            ProxyHostConfig {
+                proxy_addr: "192.168.1.2".to_string(),
+                proxy_tls: false,
+                proxy_uds: None,
+                proxy_headers: Some(vec![("Header2".to_string(), "Value2".to_string())]),
+                routes: Some(HashMap::from([
+                    (
+                        "/home".to_string(),
+                        ProxyPathBaseHostConfig {
+                            proxy_addr: None,
+                            proxy_tls: Some(false),
+                            proxy_uds: None,
+                            proxy_headers: None,
+                        },
+                    ),
+                    (
+                        "/status".to_string(),
+                        ProxyPathBaseHostConfig {
+                            proxy_addr: None,
+                            proxy_tls: Some(false),
+                            proxy_uds: None,
+                            proxy_headers: None,
+                        },
+                    ),
+                ])),
+            },
+        );
 
         Self {
             prometheus_addr: None,
@@ -242,16 +308,22 @@ impl Config {
 
     pub fn new_load_balancer_only() -> Self {
         let mut lb_servers1 = HashMap::new();
-        lb_servers1.insert("lb1".to_string(), LBHostConfig {
-            load_balancer_tls: true,
-            load_balancer_headers: Some(vec![("Header1".to_string(), "Value1".to_string())]),
-        });
+        lb_servers1.insert(
+            "lb1".to_string(),
+            LBHostConfig {
+                load_balancer_tls: true,
+                load_balancer_headers: Some(vec![("Header1".to_string(), "Value1".to_string())]),
+            },
+        );
 
         let mut lb_servers2 = HashMap::new();
-        lb_servers2.insert("lb2".to_string(), LBHostConfig {
-            load_balancer_tls: false,
-            load_balancer_headers: Some(vec![("Header2".to_string(), "Value2".to_string())]),
-        });
+        lb_servers2.insert(
+            "lb2".to_string(),
+            LBHostConfig {
+                load_balancer_tls: false,
+                load_balancer_headers: Some(vec![("Header2".to_string(), "Value2".to_string())]),
+            },
+        );
 
         Self {
             prometheus_addr: Some("0.0.0.0:8080".to_string()),
