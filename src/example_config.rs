@@ -60,7 +60,7 @@ impl Config {
                                     "X-Another-Header".to_string(),
                                     "another-value".to_string(),
                                 )]),
-                                routes: Some(Trie::from([
+                                routes: Some(Trie::from_iter([
                                     (
                                         "/home".to_string(),
                                         ProxyPathBaseHostConfig {
@@ -88,7 +88,7 @@ impl Config {
                     listener: "0.0.0.0:9090".to_string(),
                     tls_certificate: Some("cert.pem".to_string()),
                     tls_certificate_key: Some("key.pem".to_string()),
-                    servers: Trie::from([
+                    servers: Trie::from_iter([
                         (
                             "proxyexample.com".to_string(),
                             ProxyHostConfig {
@@ -99,7 +99,7 @@ impl Config {
                                     "X-Proxy-Header".to_string(),
                                     "proxy-value".to_string(),
                                 )]),
-                                routes: Some(Trie::from([
+                                routes: Some(Trie::from_iter([
                                     (
                                         "/data".to_string(),
                                         ProxyPathBaseHostConfig {
@@ -131,7 +131,7 @@ impl Config {
                                     "X-New-Proxy-Header".to_string(),
                                     "new-proxy-value".to_string(),
                                 )]),
-                                routes: Some(Trie::from([
+                                routes: Some(Trie::from_iter([
                                     (
                                         "/dashboard".to_string(),
                                         ProxyPathBaseHostConfig {
@@ -165,7 +165,7 @@ impl Config {
                     parallel_health_check: Some(true),
                     tls_certificate: None,
                     tls_certificate_key: None,
-                    servers: Trie::from([
+                    servers: Trie::from_iter([
                         (
                             "example.com".to_string(),
                             LBHostConfig {
@@ -196,7 +196,7 @@ impl Config {
                     parallel_health_check: Some(false),
                     tls_certificate: Some("loadbalancer_cert.pem".to_string()),
                     tls_certificate_key: Some("loadbalancer_key.pem".to_string()),
-                    servers: Trie::from([
+                    servers: Trie::from_iter([
                         (
                             "proxyexample.com".to_string(),
                             LBHostConfig {
@@ -224,7 +224,7 @@ impl Config {
     }
 
     pub fn new_proxy_only() -> Self {
-        let mut proxy_servers1 = HashMap::new();
+        let mut proxy_servers1 = Trie::new();
         proxy_servers1.insert(
             "server1".to_string(),
             ProxyHostConfig {
@@ -232,7 +232,7 @@ impl Config {
                 proxy_tls: true,
                 proxy_uds: Some(true),
                 proxy_headers: Some(vec![("Header1".to_string(), "Value1".to_string())]),
-                routes: Some(Trie::from([
+                routes: Some(Trie::from_iter([
                     (
                         "/route1".to_string(),
                         ProxyPathBaseHostConfig {
@@ -255,7 +255,7 @@ impl Config {
             },
         );
 
-        let mut proxy_servers2 = HashMap::new();
+        let mut proxy_servers2 = Trie::new();
         proxy_servers2.insert(
             "server2".to_string(),
             ProxyHostConfig {
@@ -263,7 +263,7 @@ impl Config {
                 proxy_tls: false,
                 proxy_uds: None,
                 proxy_headers: Some(vec![("Header2".to_string(), "Value2".to_string())]),
-                routes: Some(Trie::from([
+                routes: Some(Trie::from_iter([
                     (
                         "/home".to_string(),
                         ProxyPathBaseHostConfig {
@@ -307,7 +307,7 @@ impl Config {
     }
 
     pub fn new_load_balancer_only() -> Self {
-        let mut lb_servers1 = HashMap::new();
+        let mut lb_servers1 = Trie::new();
         lb_servers1.insert(
             "lb1".to_string(),
             LBHostConfig {
@@ -316,7 +316,7 @@ impl Config {
             },
         );
 
-        let mut lb_servers2 = HashMap::new();
+        let mut lb_servers2 = Trie::new();
         lb_servers2.insert(
             "lb2".to_string(),
             LBHostConfig {
