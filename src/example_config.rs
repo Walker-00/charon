@@ -17,7 +17,7 @@ impl Config {
                     listener: "0.0.0.0:8080".to_string(),
                     tls_certificate: None,
                     tls_certificate_key: None,
-                    servers: Trie::from([
+                    servers: Trie::from_iter([
                         (
                             "example.com".to_string(),
                             ProxyHostConfig {
@@ -28,7 +28,7 @@ impl Config {
                                     "X-Example-Header".to_string(),
                                     "value".to_string(),
                                 )]),
-                                routes: Some(HashMap::from([
+                                routes: Some(Trie::from_iter([
                                     (
                                         "/api/v1".to_string(),
                                         ProxyPathBaseHostConfig {
@@ -60,7 +60,7 @@ impl Config {
                                     "X-Another-Header".to_string(),
                                     "another-value".to_string(),
                                 )]),
-                                routes: Some(HashMap::from([
+                                routes: Some(Trie::from([
                                     (
                                         "/home".to_string(),
                                         ProxyPathBaseHostConfig {
@@ -88,7 +88,7 @@ impl Config {
                     listener: "0.0.0.0:9090".to_string(),
                     tls_certificate: Some("cert.pem".to_string()),
                     tls_certificate_key: Some("key.pem".to_string()),
-                    servers: HashMap::from([
+                    servers: Trie::from([
                         (
                             "proxyexample.com".to_string(),
                             ProxyHostConfig {
@@ -99,7 +99,7 @@ impl Config {
                                     "X-Proxy-Header".to_string(),
                                     "proxy-value".to_string(),
                                 )]),
-                                routes: Some(HashMap::from([
+                                routes: Some(Trie::from([
                                     (
                                         "/data".to_string(),
                                         ProxyPathBaseHostConfig {
@@ -131,7 +131,7 @@ impl Config {
                                     "X-New-Proxy-Header".to_string(),
                                     "new-proxy-value".to_string(),
                                 )]),
-                                routes: Some(HashMap::from([
+                                routes: Some(Trie::from([
                                     (
                                         "/dashboard".to_string(),
                                         ProxyPathBaseHostConfig {
@@ -165,7 +165,7 @@ impl Config {
                     parallel_health_check: Some(true),
                     tls_certificate: None,
                     tls_certificate_key: None,
-                    servers: HashMap::from([
+                    servers: Trie::from([
                         (
                             "example.com".to_string(),
                             LBHostConfig {
@@ -196,7 +196,7 @@ impl Config {
                     parallel_health_check: Some(false),
                     tls_certificate: Some("loadbalancer_cert.pem".to_string()),
                     tls_certificate_key: Some("loadbalancer_key.pem".to_string()),
-                    servers: HashMap::from([
+                    servers: Trie::from([
                         (
                             "proxyexample.com".to_string(),
                             LBHostConfig {
@@ -232,7 +232,7 @@ impl Config {
                 proxy_tls: true,
                 proxy_uds: Some(true),
                 proxy_headers: Some(vec![("Header1".to_string(), "Value1".to_string())]),
-                routes: Some(HashMap::from([
+                routes: Some(Trie::from([
                     (
                         "/route1".to_string(),
                         ProxyPathBaseHostConfig {
@@ -263,7 +263,7 @@ impl Config {
                 proxy_tls: false,
                 proxy_uds: None,
                 proxy_headers: Some(vec![("Header2".to_string(), "Value2".to_string())]),
-                routes: Some(HashMap::from([
+                routes: Some(Trie::from([
                     (
                         "/home".to_string(),
                         ProxyPathBaseHostConfig {
