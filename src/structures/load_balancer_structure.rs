@@ -1,5 +1,4 @@
-use std::collections::HashMap;
-
+use radix_trie::Trie;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Default)]
@@ -11,7 +10,7 @@ pub struct LoadBalancerConfig {
     pub parallel_health_check: Option<bool>,
     pub tls_certificate: Option<String>,
     pub tls_certificate_key: Option<String>,
-    pub servers: HashMap<String, LBHostConfig>,
+    pub servers: Trie<String, LBHostConfig>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Default)]

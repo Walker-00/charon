@@ -1,14 +1,15 @@
-use std::{collections::HashMap, sync::Arc};
+use std::sync::Arc;
 
 use async_trait::async_trait;
 use http::header::HOST;
 use pingora::{Result, prelude::HttpPeer};
 use pingora_proxy::{ProxyHttp, Session};
+use radix_trie::Trie;
 
 use crate::structures::proxy_structure::ProxyHostConfig;
 
 pub struct AppProxy {
-    pub host_configs: Arc<HashMap<String, ProxyHostConfig>>,
+    pub host_configs: Arc<Trie<String, ProxyHostConfig>>,
 }
 
 #[async_trait]

@@ -1,15 +1,16 @@
-use std::{collections::HashMap, sync::Arc};
+use std::sync::Arc;
 
 use async_trait::async_trait;
 use http::header::HOST;
 use pingora::{Result, prelude::HttpPeer};
 use pingora_load_balancing::{LoadBalancer, prelude::RoundRobin};
 use pingora_proxy::{ProxyHttp, Session};
+use radix_trie::Trie;
 
 use crate::structures::load_balancer_structure::LBHostConfig;
 
 pub struct AppLB {
-    pub host_configs: Arc<HashMap<String, LBHostConfig>>,
+    pub host_configs: Arc<Trie<String, LBHostConfig>>,
     pub lb_upstreams: Arc<LoadBalancer<RoundRobin>>,
     // pub routes: Option<HashMap<String, AppPathBaseLB>>,
 }

@@ -1,7 +1,8 @@
-use std::{collections::HashMap, fmt};
+use std::fmt;
 
 use pest::Parser;
 use pest_derive::Parser;
+use radix_trie::Trie;
 
 use crate::structures::{
     general::Config,
@@ -40,7 +41,7 @@ fn parse_proxy_config(pair: pest::iterators::Pair<Rule>) -> ProxyConfig {
     let mut listener = String::new();
     let mut tls_certificate = None;
     let mut tls_certificate_key = None;
-    let mut servers = HashMap::new();
+    let mut servers = Trie::new();
 
     for pairs in pair.into_inner() {
         let pair = pairs.clone().into_inner();
@@ -71,7 +72,7 @@ fn parse_proxy_domain_config(pair: pest::iterators::Pair<Rule>) -> (String, Prox
     let mut proxy_tls = false;
     let mut proxy_headers = None;
     let mut proxy_uds = false;
-    let mut routes = HashMap::new();
+    let mut routes = Trie::new();
 
     for pair in pair.into_inner() {
         match pair.as_rule() {
@@ -166,7 +167,7 @@ fn parse_load_balancer_config(pair: pest::iterators::Pair<Rule>) -> LoadBalancer
     let mut parallel_health_check = None;
     let mut tls_certificate = None;
     let mut tls_certificate_key = None;
-    let mut servers = HashMap::new();
+    let mut servers = Trie::new();
 
     for pair in pair.into_inner() {
         match pair.as_rule() {

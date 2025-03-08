@@ -1,5 +1,4 @@
-use std::collections::HashMap;
-
+use radix_trie::Trie;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Default)]
@@ -7,7 +6,7 @@ pub struct ProxyConfig {
     pub listener: String,
     pub tls_certificate: Option<String>,
     pub tls_certificate_key: Option<String>,
-    pub servers: HashMap<String, ProxyHostConfig>,
+    pub servers: Trie<String, ProxyHostConfig>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Default)]
@@ -16,7 +15,7 @@ pub struct ProxyHostConfig {
     pub proxy_tls: bool,
     pub proxy_headers: Option<Vec<(String, String)>>,
     pub proxy_uds: Option<bool>,
-    pub routes: Option<HashMap<String, ProxyPathBaseHostConfig>>,
+    pub routes: Option<Trie<String, ProxyPathBaseHostConfig>>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Default)]
